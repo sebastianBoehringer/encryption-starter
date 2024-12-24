@@ -16,7 +16,7 @@ import static de.dhbw.cas.encryption.configuration.DecryptionConfiguration.PROPE
 class DecryptionConfigurationTest {
 
     private static final Environment COMPLETE_ENVIRONMENT = new MockEnvironment()
-            .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
+            .withProperty(PROPERTY_PREFIX + "key-file", "single-hex-line.txt")
             .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
             .withProperty(PROPERTY_PREFIX + "iv", "4146")
             .withProperty(PROPERTY_PREFIX + "symmetric", "true")
@@ -63,8 +63,8 @@ class DecryptionConfigurationTest {
     @Test
     void test_fromEnvironment_parsesCompleteConfiguration() {
         DecryptionConfiguration expected = new DecryptionConfiguration(
-                new byte[0],
-                "AES", "AF".getBytes(StandardCharsets.US_ASCII), true,
+                "Never gonna let you down".getBytes(StandardCharsets.UTF_8), "AES",
+                "AF".getBytes(StandardCharsets.US_ASCII), true,
                 new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.UTF_8,
                 true
         );
@@ -75,12 +75,13 @@ class DecryptionConfigurationTest {
     @Test
     void test_fromEnvironment_appliesCorrectDefaultParameters() {
         MockEnvironment environment = new MockEnvironment()
-                .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
+                .withProperty(PROPERTY_PREFIX + "key-file", "single-hex-line.txt")
                 .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true");
 
-        DecryptionConfiguration expected = new DecryptionConfiguration(new byte[0],
-                "AES", new byte[0], true, new String[0], StandardCharsets.US_ASCII, true);
+        DecryptionConfiguration expected = new DecryptionConfiguration(
+                "Never gonna let you down".getBytes(StandardCharsets.US_ASCII), "AES", new byte[0], true,
+                new String[0], StandardCharsets.US_ASCII, true);
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
