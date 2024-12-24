@@ -22,16 +22,16 @@ This means that you have to register the property source yourself.
 
 - [x] Basic implementation of `EnvironmentPostProcessor` that is "working", i.e. Spring actually calls it. The
   implementation does not really have to do anything.
-- [ ] Make the implementation do its actual job, i.e. decrypting properties. Limit this feature to just a single
+- [x] Make the implementation do its actual job, i.e. decrypting properties. Limit this feature to just a single
   property `spring.datasource.password`. Also limit the available encryption algorithm to DES and hardcode the key.
 - [ ] Allow loading keys from different locations
-- [ ] As the bytes are ultimately interpreted as string data make sure that correct char set is chosen or it is
+- [x] As the bytes are ultimately interpreted as string data make sure that correct char set is chosen or it is
   customizable
-- [ ] Check how property placeholders are affected. I.e. `property=something${other.property}`. The best use case is for
+- [x] Check how property placeholders are affected. I.e. `property=something${other.property}`. The best use case is for
   the implemented processor to apply before placeholders are reworked. It is more likely that a user has credentials
   used in multiple places than that he is creating a single hexString via multiple other properties
 - [ ] Make the implementation more customizable, i.e. support different algorithms
-- [ ] Figure out an easy way to tell the processor which properties should actually be processed.
+- [x] Figure out an easy way to tell the processor which properties should actually be processed.
 - [ ] Increase test cases
 - [ ] Improve documentation
 - [ ] Make the project work as a separate dependency
