@@ -41,17 +41,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Build project with Maven
+      - name: "Build project with Maven"
         run: mvn -B package --file pom.xml
-        continue-on-error: true
 
       - name: Upload test report
+        if: '!cancelled()'
         uses: actions/upload-artifact@v4
         with:
           path: '**/target/surefire-reports/TEST*.xml'
           if-no-files-found: error
           retention-days: 7
-
-      - name: Fail if tests failed
-        if: steps.Build_project_with_Maven.outcome == 'failure'
-        run: exit 1
