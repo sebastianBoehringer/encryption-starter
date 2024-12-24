@@ -1,7 +1,6 @@
 package de.dhbw.cas.encryption.decryptors;
 
 import de.dhbw.cas.encryption.exception.DecryptionException;
-import de.dhbw.cas.encryption.util.HexConverter;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -9,8 +8,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -21,11 +18,11 @@ public class SymmetricDecryptor implements TextDecryptor {
     private final Key key;
     private final Cipher cipher;
 
-    public SymmetricDecryptor(String algorithm, File keyFile) throws DecryptionException {
+    public SymmetricDecryptor(String algorithm, byte[] keyBytes) throws DecryptionException {
         try {
-            key = new SecretKeySpec(HexConverter.loadBytesFromFile(keyFile), algorithm);
+            key = new SecretKeySpec(keyBytes, algorithm);
             cipher = Cipher.getInstance(algorithm);
-        } catch (IOException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new DecryptionException(e);
         }
     }

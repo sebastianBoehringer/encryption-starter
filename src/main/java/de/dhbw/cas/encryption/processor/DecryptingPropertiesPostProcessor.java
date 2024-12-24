@@ -49,7 +49,7 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
             log.debug("Successfully parsed configuration [" + configuration + "]. Creating decryptor");
             TextDecryptor decryptor;
             if (configuration.symmetric()) {
-                decryptor = new SymmetricDecryptor(configuration.algorithm(), configuration.keyFile());
+                decryptor = new SymmetricDecryptor(configuration.algorithm(), configuration.key());
                 log.debug("Successfully created symmetric decryptor [" + decryptor + "]");
             } else {
                 //TODO this will be implemented soon

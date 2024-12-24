@@ -4,7 +4,9 @@ package de.dhbw.cas.encryption.configuration;
 import de.dhbw.cas.encryption.util.HexConverter;
 import org.springframework.core.env.Environment;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -15,9 +17,11 @@ import java.util.Objects;
  * The properties this is configured from all start with {@link #PROPERTY_PREFIX}. The other property names follow
  * normal naming convention and are derived from the field name in this record. I.e. key-file, algorithm, etc.
  * Multiple properties for {@link #properties} can be separated by a comma ({@code ','})
- * {@link #keyFile}, {@link #algorithm} and {@link #symmetric} are required properties.
+ * {@link #key}, {@link #algorithm} and {@link #symmetric} are required properties.
  *
- * @param keyFile    The file containing the hex string of the key. Required. The value of the property is interpreted as a path to the file
+ * @param key        The bytes of the key. Required. The value of the property is interpreted as a path to the file containing the key.
+ *                   This can either be an absolute path to search the file system. If no file with the given name exists
+ *                   there the classpath is searched
  * @param algorithm  The algorithm to use to decrypt the properties. Required
  * @param iv         The initialization vector to use. Optional, defaults to an empty array
  * @param symmetric  {@code True} if the algorithm is symmetric, {@code false} if it is asymmetric. Required
@@ -25,7 +29,7 @@ import java.util.Objects;
  * @param charset    The charset to use for the decrypted strings. Optional, defaults to US_ASCII
  * @param enabled    A flag to determine if decryption should be enabled. Optional, defaults to true
  */
-public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv, boolean symmetric, String[] properties,
+public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, boolean symmetric, String[] properties,
                                       Charset charset, boolean enabled) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
@@ -55,14 +59,31 @@ public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv,
             }
         }
         boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
-        return new DecryptionConfiguration(new File(keyFilePath), algorithm, iv, symmetric,
-                properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
+        try {
+
+            return new DecryptionConfiguration(findFile(keyFilePath, charset), algorithm, iv, symmetric,
+                    properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
+        }
+    }
+
+    private static byte[] findFile(String path, Charset charset) throws IOException {
+        File file = new File(path);
+        if (file.exists()) {
+            return HexConverter.loadBytesFromFile(file);
+        }
+        try (BufferedInputStream resourceAsStream = new BufferedInputStream(DecryptionConfiguration.class.getClassLoader().getResourceAsStream(path))) {
+            byte[] bytes = resourceAsStream.readAllBytes();
+            String converted = new String(bytes, charset);
+            return HexConverter.loadBytesFromHexString(converted.split("\r?\n")[0]);
+        }
     }
 
     @Override
     public String toString() {
         return "DecryptionConfiguration{" +
-                "keyFile=" + keyFile +
+                "key=" + Arrays.toString(key) +
                 ", algorithm='" + algorithm + '\'' +
                 ", iv=" + Arrays.toString(iv) +
                 ", symmetric=" + symmetric +
@@ -75,17 +96,17 @@ public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv,
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof DecryptionConfiguration(
-                File otherKeyFile, String otherAlgorithm, byte[] otherIv, boolean otherSymmetrical,
+                byte[] otherKey, String otherAlgorithm, byte[] otherIv, boolean otherSymmetrical,
                 String[] otherProperties, Charset otherCharset, boolean otherEnabled
         ))) return false;
-        return symmetric == otherSymmetrical && Objects.deepEquals(iv, otherIv) && Objects.equals(keyFile, otherKeyFile)
+        return symmetric == otherSymmetrical && Objects.deepEquals(iv, otherIv) && Objects.deepEquals(key, otherKey)
                 && Objects.equals(charset, otherCharset) && Objects.equals(algorithm, otherAlgorithm)
                 && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(keyFile, algorithm, Arrays.hashCode(iv), symmetric, Arrays.hashCode(properties), charset,
-                enabled);
+        return Objects.hash(Arrays.hashCode(key), algorithm, Arrays.hashCode(iv), symmetric,
+                Arrays.hashCode(properties), charset, enabled);
     }
 }
