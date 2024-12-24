@@ -19,7 +19,6 @@ class DecryptionConfigurationTest {
             .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
             .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
             .withProperty(PROPERTY_PREFIX + "symmetric", "true")
-            .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
             .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password");
 
     static Stream<Arguments> incompleteConfigurations() {
@@ -28,32 +27,25 @@ class DecryptionConfigurationTest {
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
                         .withProperty(PROPERTY_PREFIX + "symmetric", "true")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
                         .withProperty(PROPERTY_PREFIX + "symmetric", "true")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
                         .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "symmetric", "true")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
-                        .withProperty(PROPERTY_PREFIX + "property-name-pattern", "")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password"))
         );
     }
@@ -69,8 +61,7 @@ class DecryptionConfigurationTest {
     void test_fromEnvironment_parsesCompleteConfiguration() {
         DecryptionConfiguration expected = new DecryptionConfiguration(
                 new File("src/test/resources/test-key-file.txt"),
-                "AES", true, "",
-                new String[]{"spring.datasource.password", "spring.data.mongodb.password"}
+                "AES", true, new String[]{"spring.datasource.password", "spring.data.mongodb.password"}
         );
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
         Assertions.assertThat(parsed).isEqualTo(expected);
@@ -84,7 +75,7 @@ class DecryptionConfigurationTest {
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true");
 
         DecryptionConfiguration expected = new DecryptionConfiguration(new File("src/test/resources/test-key-file.txt"),
-                "AES", true, "", new String[0]);
+                "AES", true, new String[0]);
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
