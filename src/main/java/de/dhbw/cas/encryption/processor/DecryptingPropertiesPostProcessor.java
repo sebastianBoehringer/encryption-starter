@@ -42,6 +42,10 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
 
             log.debug("Trying to parse configuration");
             DecryptionConfiguration configuration = DecryptionConfiguration.fromEnvironment(environment);
+            if (!configuration.enabled()) {
+                log.debug("Configuration disables this processor");
+                return;
+            }
             log.debug("Successfully parsed configuration [" + configuration + "]. Creating decryptor");
             TextDecryptor decryptor;
             if (configuration.symmetric()) {

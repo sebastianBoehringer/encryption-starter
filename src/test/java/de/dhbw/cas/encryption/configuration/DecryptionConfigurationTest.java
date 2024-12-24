@@ -9,6 +9,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static de.dhbw.cas.encryption.configuration.DecryptionConfiguration.PROPERTY_PREFIX;
@@ -61,21 +62,23 @@ class DecryptionConfigurationTest {
     void test_fromEnvironment_parsesCompleteConfiguration() {
         DecryptionConfiguration expected = new DecryptionConfiguration(
                 new File("src/test/resources/test-key-file.txt"),
-                "AES", true, new String[]{"spring.datasource.password", "spring.data.mongodb.password"}
+                "AES", new byte[0], true,
+                new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.US_ASCII,
+                true
         );
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
 
     @Test
-    void test_fromEnvironment_convertsMissingOptionalPropertiesToEmpty() {
+    void test_fromEnvironment_appliesCorrectDefaultParameters() {
         MockEnvironment environment = new MockEnvironment()
                 .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
                 .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true");
 
         DecryptionConfiguration expected = new DecryptionConfiguration(new File("src/test/resources/test-key-file.txt"),
-                "AES", true, new String[0]);
+                "AES", new byte[0], true, new String[0], StandardCharsets.US_ASCII, true);
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }

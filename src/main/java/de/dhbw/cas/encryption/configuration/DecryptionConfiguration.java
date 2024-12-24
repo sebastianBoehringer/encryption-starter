@@ -23,9 +23,10 @@ import java.util.Objects;
  * @param symmetric  {@code True} if the algorithm is symmetric, {@code false} if it is asymmetric. Required
  * @param properties A list of property names to decode. Optional, defaults to an empty array
  * @param charset    The charset to use for the decrypted strings. Optional, defaults to US_ASCII
+ * @param enabled    A flag to determine if decryption should be enabled. Optional, defaults to true
  */
 public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv, boolean symmetric, String[] properties,
-                                      Charset charset) {
+                                      Charset charset, boolean enabled) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
     /**
@@ -53,8 +54,9 @@ public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv,
                 //if char set with provided name cannot be found we still default to US_ASCII
             }
         }
+        boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         return new DecryptionConfiguration(new File(keyFilePath), algorithm, iv, symmetric,
-                properties.isEmpty() ? new String[0] : properties.split(","), charset);
+                properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
     }
 
     @Override
@@ -66,6 +68,7 @@ public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv,
                 ", symmetric=" + symmetric +
                 ", properties=" + Arrays.toString(properties) +
                 ", charset=" + charset +
+                ", enabled=" + enabled +
                 '}';
     }
 
@@ -73,15 +76,16 @@ public record DecryptionConfiguration(File keyFile, String algorithm, byte[] iv,
     public boolean equals(Object o) {
         if (!(o instanceof DecryptionConfiguration(
                 File otherKeyFile, String otherAlgorithm, byte[] otherIv, boolean otherSymmetrical,
-                String[] otherProperties, Charset otherCharset
+                String[] otherProperties, Charset otherCharset, boolean otherEnabled
         ))) return false;
         return symmetric == otherSymmetrical && Objects.deepEquals(iv, otherIv) && Objects.equals(keyFile, otherKeyFile)
                 && Objects.equals(charset, otherCharset) && Objects.equals(algorithm, otherAlgorithm)
-                && Objects.deepEquals(properties, otherProperties);
+                && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(keyFile, algorithm, Arrays.hashCode(iv), symmetric, Arrays.hashCode(properties), charset);
+        return Objects.hash(keyFile, algorithm, Arrays.hashCode(iv), symmetric, Arrays.hashCode(properties), charset,
+                enabled);
     }
 }
