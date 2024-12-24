@@ -4,14 +4,16 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 import java.util.Map;
 
+@Order
 public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcessor {
+    public static final String DECRYPTED_PROPERTY_SOURCE_NAME = "decrypted_properties";
     private final Log log;
-    public final static String DECRYPTED_PROPERTY_SOURCE_NAME = "decrypted_properties";
 
     public DecryptingPropertiesPostProcessor(DeferredLogFactory deferredLogFactory) {
         log = deferredLogFactory.getLog(this.getClass());
