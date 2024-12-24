@@ -6,7 +6,7 @@ import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
 @TestPropertySource("classpath:properties/unencrypted.properties")
-class UnencryptedApplicationTests {
+class UnencryptedApplicationTest {
 
     @Test
     void test_applicationStartsWithUnencryptedProperties() {
