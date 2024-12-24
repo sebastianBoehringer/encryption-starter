@@ -19,8 +19,11 @@ class DecryptionConfigurationTest {
     private static final Environment COMPLETE_ENVIRONMENT = new MockEnvironment()
             .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
             .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
+            .withProperty(PROPERTY_PREFIX + "iv", "4146")
             .withProperty(PROPERTY_PREFIX + "symmetric", "true")
-            .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password");
+            .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")
+            .withProperty(PROPERTY_PREFIX + "charset", "UTF-8")
+            .withProperty(PROPERTY_PREFIX + "enabled", "true");
 
     static Stream<Arguments> incompleteConfigurations() {
         return Stream.of(
@@ -62,8 +65,8 @@ class DecryptionConfigurationTest {
     void test_fromEnvironment_parsesCompleteConfiguration() {
         DecryptionConfiguration expected = new DecryptionConfiguration(
                 new File("src/test/resources/test-key-file.txt"),
-                "AES", new byte[0], true,
-                new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.US_ASCII,
+                "AES", "AF".getBytes(StandardCharsets.US_ASCII), true,
+                new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.UTF_8,
                 true
         );
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
