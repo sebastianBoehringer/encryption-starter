@@ -1,10 +1,14 @@
 package de.dhbw.cas.encryption.util;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -58,6 +62,12 @@ class HexConverterTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"zzzzzz", "äöü", "ggg", ",,"})
+    void test_loadBytesFromHexString_throwsOnInvalidCharacters(String invalidHexString) {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HexConverter.loadBytesFromHexString(invalidHexString));
+    }
+
+    @ParameterizedTest
     @MethodSource("randomStrings")
     void test_classMethodsConvertBetweenThemselves(String test) {
         byte[] bytes = test.getBytes(StandardCharsets.UTF_8);
@@ -65,5 +75,29 @@ class HexConverterTest {
         byte[] loadedBytes = HexConverter.loadBytesFromHexString(hexString);
         Assertions.assertArrayEquals(bytes, loadedBytes);
         Assertions.assertEquals(test, new String(loadedBytes, StandardCharsets.UTF_8));
+    }
+
+
+    @Test
+    void test_loadBytesFromFile_correctlyLoadsFileWithSingleLine() throws IOException {
+        File file = new File("./src/test/resources/single-hex-line.txt");
+        Assertions.assertTrue(file.exists());
+        byte[] bytes = HexConverter.loadBytesFromFile(file);
+        Assertions.assertArrayEquals(bytes, "Never gonna let you down".getBytes(StandardCharsets.US_ASCII));
+    }
+
+    @Test
+    void test_loadBytesFromFile_correctlyIgnoresContentOfOtherLines() throws IOException {
+        File file = new File("./src/test/resources/multiple-hex-lines.txt");
+        Assertions.assertTrue(file.exists());
+        byte[] bytes = HexConverter.loadBytesFromFile(file);
+        Assertions.assertArrayEquals(bytes, "Never gonna let you down".getBytes(StandardCharsets.US_ASCII));
+    }
+
+    @Test
+    void test_loadBytesFromFile_throwsExceptionOnNonHexCharacter() {
+        File file = new File("./src/test/resources/invalid-characters.txt");
+        Assertions.assertTrue(file.exists());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> HexConverter.loadBytesFromFile(file));
     }
 }

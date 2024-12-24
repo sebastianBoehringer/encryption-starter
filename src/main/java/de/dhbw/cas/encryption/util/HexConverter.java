@@ -1,5 +1,9 @@
 package de.dhbw.cas.encryption.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HexFormat;
 
 /**
@@ -25,5 +29,20 @@ public final class HexConverter {
      */
     public static byte[] loadBytesFromHexString(final String hexString) {
         return FORMAT.parseHex(hexString);
+    }
+
+    /**
+     * Reads the first line from a file and interprets it as bytes
+     *
+     * @param file The file containing a hex string
+     * @return The bytes converted from the hex string
+     * @throws IOException If anything goes wrong while reading the file
+     */
+    public static byte[] loadBytesFromFile(final File file) throws IOException {
+        String firstLine;
+        try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
+            firstLine = fileReader.readLine();
+        }
+        return loadBytesFromHexString(firstLine);
     }
 }
