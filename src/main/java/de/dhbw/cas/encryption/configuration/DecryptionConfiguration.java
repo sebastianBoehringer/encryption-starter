@@ -3,8 +3,8 @@ package de.dhbw.cas.encryption.configuration;
 
 import de.dhbw.cas.encryption.util.HexConverter;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -61,23 +61,22 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
         boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         try {
 
-            return new DecryptionConfiguration(findFile(keyFilePath, charset), algorithm, iv, symmetric,
+            return new DecryptionConfiguration(findFile(keyFilePath), algorithm, iv, symmetric,
                     properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
         } catch (IOException e) {
             throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
         }
     }
 
-    private static byte[] findFile(String path, Charset charset) throws IOException {
+    private static byte[] findFile(String path) throws IOException {
         File file = new File(path);
-        if (file.exists()) {
+        if (!file.exists()) {
+            file = new ClassPathResource(path).getFile();
+        }
+        if (file.exists() && file.isFile()) {
             return HexConverter.loadBytesFromFile(file);
         }
-        try (BufferedInputStream resourceAsStream = new BufferedInputStream(DecryptionConfiguration.class.getClassLoader().getResourceAsStream(path))) {
-            byte[] bytes = resourceAsStream.readAllBytes();
-            String converted = new String(bytes, charset);
-            return HexConverter.loadBytesFromHexString(converted.split("\r?\n")[0]);
-        }
+        throw new IllegalStateException("File not found in either file system or class path: " + path);
     }
 
     @Override
