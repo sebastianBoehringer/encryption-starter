@@ -17,7 +17,7 @@ import java.util.Objects;
  * Multiple properties for {@link #properties} can be separated by a comma ({@code ','})
  * {@link #keyFile}, {@link #algorithm} and {@link #symmetric} are required properties.
  *
- * @param keyFile    The file containing the hex string of the key. Required
+ * @param keyFile    The file containing the hex string of the key. Required. The value of the property is interpreted as a path to the file
  * @param algorithm  The algorithm to use to decrypt the properties. Required
  * @param iv         The initialization vector to use. Optional, defaults to an empty array
  * @param symmetric  {@code True} if the algorithm is symmetric, {@code false} if it is asymmetric. Required
