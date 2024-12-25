@@ -24,13 +24,15 @@ This means that you have to register the property source yourself.
   implementation does not really have to do anything.
 - [x] Make the implementation do its actual job, i.e. decrypting properties. Limit this feature to just a single
   property `spring.datasource.password`. Also limit the available encryption algorithm to DES and hardcode the key.
-- [ ] Allow loading keys from different locations
+- [x] Allow loading keys from different locations
 - [x] As the bytes are ultimately interpreted as string data make sure that correct char set is chosen or it is
   customizable
 - [x] Check how property placeholders are affected. I.e. `property=something${other.property}`. The best use case is for
   the implemented processor to apply before placeholders are reworked. It is more likely that a user has credentials
   used in multiple places than that he is creating a single hexString via multiple other properties
 - [ ] Make the implementation more customizable, i.e. support different algorithms
+- [ ] Handle the case where the algorithm for generating the key is different from the encryption algorithm. This is
+  e.g. the case for AES/CBC/PKCS5Padding which is valid for `Cipher` but not for `KeyFactory`
 - [x] Figure out an easy way to tell the processor which properties should actually be processed.
 - [ ] Increase test cases
 - [ ] Improve documentation
