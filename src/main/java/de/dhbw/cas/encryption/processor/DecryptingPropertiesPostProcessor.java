@@ -8,6 +8,7 @@ import de.dhbw.cas.encryption.exception.DecryptionException;
 import de.dhbw.cas.encryption.util.HexConverter;
 import jakarta.annotation.Nonnull;
 import org.apache.commons.logging.Log;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
@@ -17,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import java.nio.charset.StandardCharsets;
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,7 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
 
     public DecryptingPropertiesPostProcessor(final DeferredLogFactory deferredLogFactory) {
         log = deferredLogFactory.getLog(this.getClass());
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     @Override
