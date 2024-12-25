@@ -17,6 +17,7 @@ Thus, this is a good starting point.
 JaSypt ultimately was using a similar approach.
 The key difference is that JaSypt uses a custom type of `PropertySource`.
 This means that you have to register the property source yourself.
+This gives the implementer more flexibility, although you also have to correctly configure it. 
 
 ## Todo Steps
 
@@ -34,6 +35,7 @@ This means that you have to register the property source yourself.
 - [x] Handle the case where the algorithm for generating the key is different from the encryption algorithm. This is
   e.g. the case for AES/CBC/PKCS5Padding which is valid for `Cipher` but not for `KeyFactory`
 - [x] Figure out an easy way to tell the processor which properties should actually be processed.
+- [x] Test if elliptic curve cryptography, other asymmetric algorithms (ElGamal) and multi key algorithms can be supported 
 - [ ] Increase test cases
 - [ ] Improve documentation
 - [ ] Make the project work as a separate dependency
