@@ -19,11 +19,11 @@ public class AsymmetricDecryptor implements TextDecryptor {
     private final Cipher cipher;
     private final PrivateKey privateKey;
 
-    public AsymmetricDecryptor(final String algorithm, final byte[] key) throws DecryptionException {
+    public AsymmetricDecryptor(@Nonnull final String transformation, @Nonnull final byte[] key) throws DecryptionException {
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.getAlgorithmFromTransformation(algorithm));
+            final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.getAlgorithmFromTransformation(transformation));
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(key));
-            cipher = Cipher.getInstance(algorithm);
+            cipher = Cipher.getInstance(transformation);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new DecryptionException(e);
         }
@@ -31,7 +31,7 @@ public class AsymmetricDecryptor implements TextDecryptor {
 
     @Override
     public String toString() {
-        return "AsymmetricDecryptor for algorithm: " + cipher.getAlgorithm();
+        return "AsymmetricDecryptor for transformation: " + cipher.getAlgorithm();
     }
 
     @Override
