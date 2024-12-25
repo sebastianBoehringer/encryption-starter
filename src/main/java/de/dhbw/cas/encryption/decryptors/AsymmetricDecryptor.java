@@ -2,6 +2,8 @@ package de.dhbw.cas.encryption.decryptors;
 
 import de.dhbw.cas.encryption.exception.DecryptionException;
 import de.dhbw.cas.encryption.util.AlgorithmUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -19,7 +21,8 @@ public class AsymmetricDecryptor implements TextDecryptor {
     private final Cipher cipher;
     private final PrivateKey privateKey;
 
-    public AsymmetricDecryptor(@Nonnull final String transformation, @Nonnull final byte[] key) throws DecryptionException {
+    public AsymmetricDecryptor(@Nonnull final String transformation, @Nonnull final byte[] key)
+            throws DecryptionException {
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.getAlgorithmFromTransformation(transformation));
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(key));
@@ -35,7 +38,8 @@ public class AsymmetricDecryptor implements TextDecryptor {
     }
 
     @Override
-    public String decrypt(final byte[] encrypted, final byte[] iv, final Charset charset) throws DecryptionException {
+    public String decrypt(@Nonnull final byte[] encrypted, @Nullable final byte[] iv, @Nonnull final Charset charset)
+            throws DecryptionException {
         try {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             final byte[] bytes = cipher.doFinal(encrypted);

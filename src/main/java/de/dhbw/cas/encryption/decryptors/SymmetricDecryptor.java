@@ -2,6 +2,8 @@ package de.dhbw.cas.encryption.decryptors;
 
 import de.dhbw.cas.encryption.exception.DecryptionException;
 import de.dhbw.cas.encryption.util.AlgorithmUtil;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -19,7 +21,8 @@ public class SymmetricDecryptor implements TextDecryptor {
     private final Key key;
     private final Cipher cipher;
 
-    public SymmetricDecryptor(final String transformation, final byte[] keyBytes) throws DecryptionException {
+    public SymmetricDecryptor(@Nonnull final String transformation, @Nonnull final byte[] keyBytes)
+            throws DecryptionException {
         try {
             key = new SecretKeySpec(keyBytes, AlgorithmUtil.getAlgorithmFromTransformation(transformation));
             cipher = Cipher.getInstance(transformation);
@@ -34,7 +37,8 @@ public class SymmetricDecryptor implements TextDecryptor {
     }
 
     @Override
-    public String decrypt(final byte[] encrypted, final byte[] iv, final Charset charset) throws DecryptionException {
+    public String decrypt(@Nonnull final byte[] encrypted, @Nullable final byte[] iv, @Nonnull final Charset charset)
+            throws DecryptionException {
         try {
             if (iv == null || iv.length == 0) {
                 cipher.init(Cipher.DECRYPT_MODE, key);

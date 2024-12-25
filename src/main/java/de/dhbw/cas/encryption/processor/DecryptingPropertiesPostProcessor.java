@@ -6,6 +6,7 @@ import de.dhbw.cas.encryption.decryptors.SymmetricDecryptor;
 import de.dhbw.cas.encryption.decryptors.TextDecryptor;
 import de.dhbw.cas.encryption.exception.DecryptionException;
 import de.dhbw.cas.encryption.util.HexConverter;
+import jakarta.annotation.Nonnull;
 import org.apache.commons.logging.Log;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -38,7 +39,8 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
     }
 
     @Override
-    public void postProcessEnvironment(final ConfigurableEnvironment environment, final SpringApplication application) {
+    public void postProcessEnvironment(@Nonnull final ConfigurableEnvironment environment,
+                                       @Nonnull final SpringApplication application) {
         try {
 
             log.debug("Trying to parse configuration");
@@ -66,9 +68,9 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
         }
     }
 
-    private Map<String, Object> getDecryptedProperties(final Environment environment,
-                                                       final DecryptionConfiguration configuration,
-                                                       final TextDecryptor decryptor) {
+    private Map<String, Object> getDecryptedProperties(@Nonnull final Environment environment,
+                                                       @Nonnull final DecryptionConfiguration configuration,
+                                                       @Nonnull final TextDecryptor decryptor) {
         Map<String, Object> propertiesToDecrypt = new HashMap<>();
         for (String property : configuration.properties()) {
             String value = environment.getProperty(property);

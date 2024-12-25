@@ -2,6 +2,8 @@ package de.dhbw.cas.encryption.configuration;
 
 
 import de.dhbw.cas.encryption.util.HexConverter;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 
@@ -29,15 +31,16 @@ import java.util.Objects;
  * @param charset        The charset to use for the decrypted strings. Optional, defaults to US_ASCII
  * @param enabled        A flag to determine if decryption should be enabled. Optional, defaults to true
  */
-public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv, boolean symmetric, String[] properties,
-                                      Charset charset, boolean enabled) {
+public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String transformation, @Nonnull byte[] iv,
+                                      boolean symmetric, @Nonnull String[] properties, @Nonnull Charset charset,
+                                      boolean enabled) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
     /**
      * @param environment The environment to load the properties from
      * @return The loaded configuration
      */
-    public static DecryptionConfiguration fromEnvironment(final Environment environment) {
+    public static DecryptionConfiguration fromEnvironment(@Nonnull final Environment environment) {
         final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key");
         final String transformation = environment.getRequiredProperty(PROPERTY_PREFIX + "transformation");
         final String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
@@ -68,7 +71,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         }
     }
 
-    private static byte[] findFile(final String path) throws IOException {
+    private static byte[] findFile(@Nonnull final String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
             file = new ClassPathResource(path).getFile();
@@ -93,7 +96,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(@Nullable final Object o) {
         if (!(o instanceof DecryptionConfiguration(
                 byte[] otherKey, String otherTransformation, byte[] otherIv, boolean otherSymmetrical,
                 String[] otherProperties, Charset otherCharset, boolean otherEnabled

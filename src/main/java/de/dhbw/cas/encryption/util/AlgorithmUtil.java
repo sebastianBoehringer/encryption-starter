@@ -1,5 +1,7 @@
 package de.dhbw.cas.encryption.util;
 
+import jakarta.annotation.Nonnull;
+
 public final class AlgorithmUtil {
     private AlgorithmUtil() {
     }
@@ -18,7 +20,7 @@ public final class AlgorithmUtil {
      * @see javax.crypto.Cipher
      * @see <a href="https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html">Standard naming doc</a>
      */
-    public static String getAlgorithmFromTransformation(final String transformation) {
+    public static String getAlgorithmFromTransformation(@Nonnull final String transformation) {
         return transformation.split("/")[0].split("_")[0];
     }
 }
