@@ -73,7 +73,7 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
             if (value != null) {
                 try {
                     String decryptedProperty = decryptor.decrypt(HexConverter.loadBytesFromHexString(value),
-                            new byte[0], StandardCharsets.US_ASCII);
+                            configuration.iv(), StandardCharsets.US_ASCII);
                     log.debug("Decrypted value [" + value + "] of property " + property + " to string of length " +
                             decryptedProperty.length());
                     propertiesToDecrypt.put(property, decryptedProperty);
