@@ -41,10 +41,9 @@ public final class HexConverter {
      * @throws IOException              If anything goes wrong while reading the file
      */
     public static byte[] loadBytesFromFile(final File file) throws IllegalArgumentException, IOException {
-        String firstLine;
         try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
-            firstLine = fileReader.readLine();
+            final String firstLine = fileReader.readLine();
+            return loadBytesFromHexString(firstLine);
         }
-        return loadBytesFromHexString(firstLine);
     }
 }

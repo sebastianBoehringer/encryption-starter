@@ -33,12 +33,12 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
     public static final String DECRYPTED_PROPERTY_SOURCE_NAME = "decrypted_properties";
     private final Log log;
 
-    public DecryptingPropertiesPostProcessor(DeferredLogFactory deferredLogFactory) {
+    public DecryptingPropertiesPostProcessor(final DeferredLogFactory deferredLogFactory) {
         log = deferredLogFactory.getLog(this.getClass());
     }
 
     @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+    public void postProcessEnvironment(final ConfigurableEnvironment environment, final SpringApplication application) {
         try {
 
             log.debug("Trying to parse configuration");
@@ -66,7 +66,9 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
         }
     }
 
-    private Map<String, Object> getDecryptedProperties(Environment environment, DecryptionConfiguration configuration, TextDecryptor decryptor) {
+    private Map<String, Object> getDecryptedProperties(final Environment environment,
+                                                       final DecryptionConfiguration configuration,
+                                                       final TextDecryptor decryptor) {
         Map<String, Object> propertiesToDecrypt = new HashMap<>();
         for (String property : configuration.properties()) {
             String value = environment.getProperty(property);

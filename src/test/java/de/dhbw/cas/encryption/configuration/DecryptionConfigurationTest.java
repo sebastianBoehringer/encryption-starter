@@ -62,41 +62,41 @@ class DecryptionConfigurationTest {
 
     @Test
     void test_fromEnvironment_parsesCompleteConfiguration() {
-        DecryptionConfiguration expected = new DecryptionConfiguration(
+        final DecryptionConfiguration expected = new DecryptionConfiguration(
                 "Never gonna let you down".getBytes(StandardCharsets.UTF_8), "AES",
                 "AF".getBytes(StandardCharsets.US_ASCII), true,
                 new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.UTF_8,
                 true
         );
-        DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
+        final DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
 
     @Test
     void test_fromEnvironment_appliesCorrectDefaultParameters() {
-        MockEnvironment environment = new MockEnvironment()
+        final MockEnvironment environment = new MockEnvironment()
                 .withProperty(PROPERTY_PREFIX + "key-file", "single-hex-line.txt")
                 .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true");
 
-        DecryptionConfiguration expected = new DecryptionConfiguration(
+        final DecryptionConfiguration expected = new DecryptionConfiguration(
                 "Never gonna let you down".getBytes(StandardCharsets.US_ASCII), "AES", new byte[0], true,
                 new String[0], StandardCharsets.US_ASCII, true);
-        DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
+        final DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
 
     @Test
     void test_fromEnvironment_shouldNotFileOnMissingKeyFileIfDisabled() {
-        MockEnvironment environment = new MockEnvironment()
+        final MockEnvironment environment = new MockEnvironment()
                 .withProperty(PROPERTY_PREFIX + "key-file", "i-do-not-exist.txt")
                 .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true")
                 .withProperty(PROPERTY_PREFIX + "enabled", "false");
-        DecryptionConfiguration expected = new DecryptionConfiguration(
+        final DecryptionConfiguration expected = new DecryptionConfiguration(
                 new byte[0], "AES", new byte[0], true, new String[0], StandardCharsets.US_ASCII, false
         );
-        DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
+        final DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
 }

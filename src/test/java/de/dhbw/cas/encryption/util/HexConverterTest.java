@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 class HexConverterTest {
 
     static Stream<Arguments> randomStrings() {
-        Random random = new Random();
+        final Random random = new Random();
         return Stream.of(
                 Arguments.of(generateRandomString(random.nextInt(100))),
                 Arguments.of(generateRandomString(random.nextInt(100))),
@@ -38,8 +38,8 @@ class HexConverterTest {
     }
 
     static String generateRandomString(int length) {
-        Random rand = new Random();
-        StringBuilder sb = new StringBuilder();
+        final Random rand = new Random();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
             // printable ascii characters are between 32 and 127 where 32 is space. 127 is delete and thus skipped. With
             // a random int between 0 (inclusive) and 95 (exclusive) we get the actual range of 32 to 126 with both ends
@@ -71,9 +71,9 @@ class HexConverterTest {
     @ParameterizedTest
     @MethodSource("randomStrings")
     void test_classMethodsConvertBetweenThemselves(String test) {
-        byte[] bytes = test.getBytes(StandardCharsets.UTF_8);
-        String hexString = HexConverter.convertToHexString(bytes);
-        byte[] loadedBytes = HexConverter.loadBytesFromHexString(hexString);
+        final byte[] bytes = test.getBytes(StandardCharsets.UTF_8);
+        final String hexString = HexConverter.convertToHexString(bytes);
+        final byte[] loadedBytes = HexConverter.loadBytesFromHexString(hexString);
         Assertions.assertThat(loadedBytes).isEqualTo(bytes);
         Assertions.assertThat(new String(loadedBytes, StandardCharsets.UTF_8)).isEqualTo(test);
     }
@@ -81,23 +81,23 @@ class HexConverterTest {
 
     @Test
     void test_loadBytesFromFile_correctlyLoadsFileWithSingleLine() throws IOException {
-        File file = new File("./src/test/resources/single-hex-line.txt");
+        final File file = new File("./src/test/resources/single-hex-line.txt");
         Assertions.assertThat(file).exists();
-        byte[] bytes = HexConverter.loadBytesFromFile(file);
+        final byte[] bytes = HexConverter.loadBytesFromFile(file);
         Assertions.assertThat(bytes).isEqualTo("Never gonna let you down".getBytes(StandardCharsets.US_ASCII));
     }
 
     @Test
     void test_loadBytesFromFile_correctlyIgnoresContentOfOtherLines() throws IOException {
-        File file = new File("./src/test/resources/multiple-hex-lines.txt");
+        final File file = new File("./src/test/resources/multiple-hex-lines.txt");
         Assertions.assertThat(file).exists();
-        byte[] bytes = HexConverter.loadBytesFromFile(file);
+        final byte[] bytes = HexConverter.loadBytesFromFile(file);
         Assertions.assertThat(bytes).isEqualTo("Never gonna let you down".getBytes(StandardCharsets.US_ASCII));
     }
 
     @Test
     void test_loadBytesFromFile_throwsExceptionOnNonHexCharacter() {
-        File file = new File("./src/test/resources/invalid-characters.txt");
+        final File file = new File("./src/test/resources/invalid-characters.txt");
         Assertions.assertThat(file).exists();
         Assertions.assertThatThrownBy(() -> HexConverter.loadBytesFromFile(file)).isInstanceOf(IllegalArgumentException.class);
     }

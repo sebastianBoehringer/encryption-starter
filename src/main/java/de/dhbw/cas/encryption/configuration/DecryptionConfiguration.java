@@ -37,19 +37,19 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
      * @param environment The environment to load the properties from
      * @return The loaded configuration
      */
-    public static DecryptionConfiguration fromEnvironment(Environment environment) {
-        String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key-file");
-        String algorithm = environment.getRequiredProperty(PROPERTY_PREFIX + "algorithm");
-        String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
+    public static DecryptionConfiguration fromEnvironment(final Environment environment) {
+        final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key-file");
+        final String algorithm = environment.getRequiredProperty(PROPERTY_PREFIX + "algorithm");
+        final String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
         byte[] iv;
         if (ivHex.isEmpty()) {
             iv = new byte[0];
         } else {
             iv = HexConverter.loadBytesFromHexString(ivHex);
         }
-        Boolean symmetric = environment.getRequiredProperty(PROPERTY_PREFIX + "symmetric", Boolean.class);
-        String properties = environment.getProperty(PROPERTY_PREFIX + "properties", "");
-        String charsetName = environment.getProperty(PROPERTY_PREFIX + "charset", StandardCharsets.US_ASCII.name());
+        final Boolean symmetric = environment.getRequiredProperty(PROPERTY_PREFIX + "symmetric", Boolean.class);
+        final String properties = environment.getProperty(PROPERTY_PREFIX + "properties", "");
+        final String charsetName = environment.getProperty(PROPERTY_PREFIX + "charset", StandardCharsets.US_ASCII.name());
         Charset charset = StandardCharsets.US_ASCII;
         if (!charsetName.isEmpty()) {
             try {
@@ -58,9 +58,9 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
                 //if char set with provided name cannot be found we still default to US_ASCII
             }
         }
-        boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
+        final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         try {
-            var key = enabled ? findFile(keyFilePath) : new byte[0];
+            final var key = enabled ? findFile(keyFilePath) : new byte[0];
             return new DecryptionConfiguration(key, algorithm, iv, symmetric,
                     properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
         } catch (IOException e) {
@@ -68,7 +68,7 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
         }
     }
 
-    private static byte[] findFile(String path) throws IOException {
+    private static byte[] findFile(final String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
             file = new ClassPathResource(path).getFile();
@@ -93,7 +93,7 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (!(o instanceof DecryptionConfiguration(
                 byte[] otherKey, String otherAlgorithm, byte[] otherIv, boolean otherSymmetrical,
                 String[] otherProperties, Charset otherCharset, boolean otherEnabled
