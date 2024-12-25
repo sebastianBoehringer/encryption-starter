@@ -85,4 +85,18 @@ class DecryptionConfigurationTest {
         DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
     }
+
+    @Test
+    void test_fromEnvironment_shouldNotFileOnMissingKeyFileIfDisabled() {
+        MockEnvironment environment = new MockEnvironment()
+                .withProperty(PROPERTY_PREFIX + "key-file", "i-do-not-exist.txt")
+                .withProperty(PROPERTY_PREFIX + "algorithm", "AES")
+                .withProperty(PROPERTY_PREFIX + "symmetric", "true")
+                .withProperty(PROPERTY_PREFIX + "enabled", "false");
+        DecryptionConfiguration expected = new DecryptionConfiguration(
+                new byte[0], "AES", new byte[0], true, new String[0], StandardCharsets.US_ASCII, false
+        );
+        DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
+        Assertions.assertThat(parsed).isEqualTo(expected);
+    }
 }

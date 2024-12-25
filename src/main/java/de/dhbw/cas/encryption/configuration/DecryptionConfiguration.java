@@ -60,8 +60,8 @@ public record DecryptionConfiguration(byte[] key, String algorithm, byte[] iv, b
         }
         boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         try {
-
-            return new DecryptionConfiguration(findFile(keyFilePath), algorithm, iv, symmetric,
+            var key = enabled ? findFile(keyFilePath) : new byte[0];
+            return new DecryptionConfiguration(key, algorithm, iv, symmetric,
                     properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
         } catch (IOException e) {
             throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
