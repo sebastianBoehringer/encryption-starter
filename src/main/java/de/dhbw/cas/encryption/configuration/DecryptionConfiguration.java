@@ -18,21 +18,21 @@ import java.util.Objects;
  * This record encapsulates the configuration for {@link de.dhbw.cas.encryption.processor.DecryptingPropertiesPostProcessor}.
  * The properties this is configured from all start with {@link #PROPERTY_PREFIX}. The other property names follow
  * normal naming convention and are derived from the field name in this record. I.e. key, transformation, etc.
- * Multiple properties for {@link #properties} can be separated by a comma ({@code ','})
- * {@link #key}, {@link #transformation} and {@link #symmetric} are required properties.
+ * Multiple properties for {@link #properties} can be separated by a comma ({@code ','}).
+ * {@link #key}, {@link #transformation} and {@link #type} are required properties.
  *
- * @param key            The bytes of the key. Required. The value of the property is interpreted as a path to the file 
+ * @param key            The bytes of the key. Required. The value of the property is interpreted as a path to the file
  *                       containing the key. This should usually be an absolute path to search the file system. If no file
  *                       with the given name exists there the classpath is searched instead
  * @param transformation The transformation to use to decrypt the properties. Required
  * @param iv             The initialization vector to use. Optional, defaults to an empty array
- * @param symmetric      {@code True} if the transformation is symmetric, {@code false} if it is asymmetric. Required
+ * @param type           The type of algorithm the transformation is based on. Required
  * @param properties     A list of property names to decode. Optional, defaults to an empty array
  * @param charset        The charset to use for the decrypted strings. Optional, defaults to US_ASCII
  * @param enabled        A flag to determine if decryption should be enabled. Optional, defaults to true
  */
 public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String transformation, @Nonnull byte[] iv,
-                                      boolean symmetric, @Nonnull String[] properties, @Nonnull Charset charset,
+                                      TransformationType type, @Nonnull String[] properties, @Nonnull Charset charset,
                                       boolean enabled) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
@@ -50,7 +50,7 @@ public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String trans
         } else {
             iv = HexConverter.loadBytesFromHexString(ivHex);
         }
-        final Boolean symmetric = environment.getRequiredProperty(PROPERTY_PREFIX + "symmetric", Boolean.class);
+        final String type = environment.getRequiredProperty(PROPERTY_PREFIX + "type");
         final String properties = environment.getProperty(PROPERTY_PREFIX + "properties", "");
         final String charsetName = environment.getProperty(PROPERTY_PREFIX + "charset", StandardCharsets.US_ASCII.name());
         Charset charset = StandardCharsets.US_ASCII;
@@ -64,7 +64,7 @@ public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String trans
         final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         try {
             final var key = enabled ? findFile(keyFilePath) : new byte[0];
-            return new DecryptionConfiguration(key, transformation, iv, symmetric,
+            return new DecryptionConfiguration(key, transformation, iv, TransformationType.getTransformationType(type),
                     properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
         } catch (IOException e) {
             throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
@@ -88,7 +88,7 @@ public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String trans
                 "key=" + Arrays.toString(key) +
                 ", transformation='" + transformation + '\'' +
                 ", iv=" + Arrays.toString(iv) +
-                ", symmetric=" + symmetric +
+                ", type=" + type +
                 ", properties=" + Arrays.toString(properties) +
                 ", charset=" + charset +
                 ", enabled=" + enabled +
@@ -98,17 +98,17 @@ public record DecryptionConfiguration(@Nonnull byte[] key, @Nonnull String trans
     @Override
     public boolean equals(@Nullable final Object o) {
         if (!(o instanceof DecryptionConfiguration(
-                byte[] otherKey, String otherTransformation, byte[] otherIv, boolean otherSymmetrical,
+                byte[] otherKey, String otherTransformation, byte[] otherIv, TransformationType otherType,
                 String[] otherProperties, Charset otherCharset, boolean otherEnabled
         ))) return false;
-        return symmetric == otherSymmetrical && Objects.deepEquals(iv, otherIv) && Objects.deepEquals(key, otherKey)
+        return Objects.equals(type, otherType) && Objects.deepEquals(iv, otherIv) && Objects.deepEquals(key, otherKey)
                 && Objects.equals(charset, otherCharset) && Objects.equals(transformation, otherTransformation)
                 && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Arrays.hashCode(key), transformation, Arrays.hashCode(iv), symmetric,
+        return Objects.hash(Arrays.hashCode(key), transformation, Arrays.hashCode(iv), type,
                 Arrays.hashCode(properties), charset, enabled);
     }
 }

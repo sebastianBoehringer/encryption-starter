@@ -2,6 +2,7 @@ package de.dhbw.cas.encryption.processor;
 
 import de.dhbw.cas.encryption.configuration.DecryptionConfiguration;
 import de.dhbw.cas.encryption.decryptors.AsymmetricDecryptor;
+import de.dhbw.cas.encryption.decryptors.EllipticCurveDecryptor;
 import de.dhbw.cas.encryption.decryptors.SymmetricDecryptor;
 import de.dhbw.cas.encryption.decryptors.TextDecryptor;
 import de.dhbw.cas.encryption.exception.DecryptionException;
@@ -19,6 +20,7 @@ import org.springframework.core.env.MapPropertySource;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,16 +55,14 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
                 return;
             }
             log.debug("Successfully parsed configuration [" + configuration + "]. Creating decryptor");
-            TextDecryptor decryptor;
-            if (configuration.symmetric()) {
-                decryptor = new SymmetricDecryptor(configuration.transformation(), configuration.key());
-                log.debug("Successfully created symmetric decryptor [" + decryptor + "]");
-            } else {
-                decryptor = new AsymmetricDecryptor(configuration.transformation(), configuration.key());
-                log.debug("Successfully created asymmetric decryptor [" + decryptor + "]");
-            }
+            final TextDecryptor decryptor = switch (configuration.type()) {
+                case SYMMETRIC -> new SymmetricDecryptor(configuration.transformation(), configuration.key());
+                case ASYMMETRIC -> new AsymmetricDecryptor(configuration.transformation(), configuration.key());
+                case ELLIPTIC_CURVE -> new EllipticCurveDecryptor(configuration.transformation(), configuration.key());
+            };
+            log.debug("Successfully created Decryptor [" + decryptor + "]. Starting to decrypt properties: " +
+                    Arrays.toString(configuration.properties()));
 
-            log.debug("Starting to decrypt properties");
             Map<String, Object> decryptedProperties = getDecryptedProperties(environment, configuration, decryptor);
             environment.getPropertySources().addFirst(new MapPropertySource(DECRYPTED_PROPERTY_SOURCE_NAME, decryptedProperties));
             log.debug("Successfully added new property source to environment");
