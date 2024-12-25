@@ -14,7 +14,7 @@ class RsaApplicationTest {
      * Tests that the application starts up when decryption with RSA is configured
      */
     @Test
-    void test_applicationStartsWithCorrectlyConfiguredAesEncryption(ApplicationContext context) {
+    void test_applicationStartsWithCorrectlyConfiguredRsaEncryption(ApplicationContext context) {
         Assertions.assertThat(context).isNotNull();
     }
 }
