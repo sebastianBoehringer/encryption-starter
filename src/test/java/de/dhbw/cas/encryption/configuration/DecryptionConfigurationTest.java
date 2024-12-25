@@ -16,7 +16,7 @@ import static de.dhbw.cas.encryption.configuration.DecryptionConfiguration.PROPE
 class DecryptionConfigurationTest {
 
     private static final Environment COMPLETE_ENVIRONMENT = new MockEnvironment()
-            .withProperty(PROPERTY_PREFIX + "key-file", "single-hex-line.txt")
+            .withProperty(PROPERTY_PREFIX + "key", "single-hex-line.txt")
             .withProperty(PROPERTY_PREFIX + "transformation", "AES")
             .withProperty(PROPERTY_PREFIX + "iv", "4146")
             .withProperty(PROPERTY_PREFIX + "symmetric", "true")
@@ -32,11 +32,11 @@ class DecryptionConfigurationTest {
                         .withProperty(PROPERTY_PREFIX + "symmetric", "true")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
-                        .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
+                        .withProperty(PROPERTY_PREFIX + "key", "src/test/resources/test-key.txt")
                         .withProperty(PROPERTY_PREFIX + "symmetric", "true")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
-                        .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
+                        .withProperty(PROPERTY_PREFIX + "key", "src/test/resources/test-key.txt")
                         .withProperty(PROPERTY_PREFIX + "transformation", "AES")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
@@ -46,7 +46,7 @@ class DecryptionConfigurationTest {
                         .withProperty(PROPERTY_PREFIX + "transformation", "AES")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
-                        .withProperty(PROPERTY_PREFIX + "key-file", "src/test/resources/test-key-file.txt")
+                        .withProperty(PROPERTY_PREFIX + "key", "src/test/resources/test-key.txt")
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")),
                 Arguments.of(new MockEnvironment()
                         .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password"))
@@ -75,7 +75,7 @@ class DecryptionConfigurationTest {
     @Test
     void test_fromEnvironment_appliesCorrectDefaultParameters() {
         final MockEnvironment environment = new MockEnvironment()
-                .withProperty(PROPERTY_PREFIX + "key-file", "single-hex-line.txt")
+                .withProperty(PROPERTY_PREFIX + "key", "single-hex-line.txt")
                 .withProperty(PROPERTY_PREFIX + "transformation", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true");
 
@@ -89,7 +89,7 @@ class DecryptionConfigurationTest {
     @Test
     void test_fromEnvironment_shouldNotFileOnMissingKeyFileIfDisabled() {
         final MockEnvironment environment = new MockEnvironment()
-                .withProperty(PROPERTY_PREFIX + "key-file", "i-do-not-exist.txt")
+                .withProperty(PROPERTY_PREFIX + "key", "i-do-not-exist.txt")
                 .withProperty(PROPERTY_PREFIX + "transformation", "AES")
                 .withProperty(PROPERTY_PREFIX + "symmetric", "true")
                 .withProperty(PROPERTY_PREFIX + "enabled", "false");

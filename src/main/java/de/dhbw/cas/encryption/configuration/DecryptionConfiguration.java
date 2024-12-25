@@ -15,19 +15,19 @@ import java.util.Objects;
 /**
  * This record encapsulates the configuration for {@link de.dhbw.cas.encryption.processor.DecryptingPropertiesPostProcessor}.
  * The properties this is configured from all start with {@link #PROPERTY_PREFIX}. The other property names follow
- * normal naming convention and are derived from the field name in this record. I.e. key-file, transformation, etc.
+ * normal naming convention and are derived from the field name in this record. I.e. key, transformation, etc.
  * Multiple properties for {@link #properties} can be separated by a comma ({@code ','})
  * {@link #key}, {@link #transformation} and {@link #symmetric} are required properties.
  *
- * @param key        The bytes of the key. Required. The value of the property is interpreted as a path to the file containing the key.
- *                   This can either be an absolute path to search the file system. If no file with the given name exists
- *                   there the classpath is searched
- * @param transformation  The transformation to use to decrypt the properties. Required
- * @param iv         The initialization vector to use. Optional, defaults to an empty array
- * @param symmetric  {@code True} if the transformation is symmetric, {@code false} if it is asymmetric. Required
- * @param properties A list of property names to decode. Optional, defaults to an empty array
- * @param charset    The charset to use for the decrypted strings. Optional, defaults to US_ASCII
- * @param enabled    A flag to determine if decryption should be enabled. Optional, defaults to true
+ * @param key            The bytes of the key. Required. The value of the property is interpreted as a path to the file 
+ *                       containing the key. This should usually be an absolute path to search the file system. If no file
+ *                       with the given name exists there the classpath is searched instead
+ * @param transformation The transformation to use to decrypt the properties. Required
+ * @param iv             The initialization vector to use. Optional, defaults to an empty array
+ * @param symmetric      {@code True} if the transformation is symmetric, {@code false} if it is asymmetric. Required
+ * @param properties     A list of property names to decode. Optional, defaults to an empty array
+ * @param charset        The charset to use for the decrypted strings. Optional, defaults to US_ASCII
+ * @param enabled        A flag to determine if decryption should be enabled. Optional, defaults to true
  */
 public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv, boolean symmetric, String[] properties,
                                       Charset charset, boolean enabled) {
@@ -38,7 +38,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
      * @return The loaded configuration
      */
     public static DecryptionConfiguration fromEnvironment(final Environment environment) {
-        final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key-file");
+        final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key");
         final String transformation = environment.getRequiredProperty(PROPERTY_PREFIX + "transformation");
         final String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
         byte[] iv;
