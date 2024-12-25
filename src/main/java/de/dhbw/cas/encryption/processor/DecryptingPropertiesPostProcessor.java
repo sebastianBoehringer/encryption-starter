@@ -1,6 +1,7 @@
 package de.dhbw.cas.encryption.processor;
 
 import de.dhbw.cas.encryption.configuration.DecryptionConfiguration;
+import de.dhbw.cas.encryption.decryptors.AsymmetricDecryptor;
 import de.dhbw.cas.encryption.decryptors.SymmetricDecryptor;
 import de.dhbw.cas.encryption.decryptors.TextDecryptor;
 import de.dhbw.cas.encryption.exception.DecryptionException;
@@ -52,8 +53,8 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
                 decryptor = new SymmetricDecryptor(configuration.algorithm(), configuration.key());
                 log.debug("Successfully created symmetric decryptor [" + decryptor + "]");
             } else {
-                //TODO this will be implemented soon
-                return;
+                decryptor = new AsymmetricDecryptor(configuration.algorithm(), configuration.key());
+                log.debug("Successfully created asymmetric decryptor [" + decryptor + "]");
             }
 
             log.debug("Starting to decrypt properties");
