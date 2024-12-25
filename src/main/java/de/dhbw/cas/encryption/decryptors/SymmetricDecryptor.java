@@ -28,6 +28,11 @@ public class SymmetricDecryptor implements TextDecryptor {
     }
 
     @Override
+    public String toString() {
+        return "SymmetricDecryptor for algorithm: " + cipher.getAlgorithm();
+    }
+
+    @Override
     public String decrypt(byte[] encrypted, byte[] iv, Charset charset) throws DecryptionException {
         try {
             if (iv == null || iv.length == 0) {
