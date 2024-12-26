@@ -33,6 +33,11 @@ This includes
   and only connects to a database. See the [instructions](documentation/running_demo_app.md) for running the demo app
 * [processor](processor) contains the maven project for the processor itself
 
+## Limitations
+
+* For asymmetric or elliptic curve algorithms the provided key is expected to be in ANS.1/PKCS8 format
+* For asymmetric or elliptic curve algorithms the key is always treated as the private key
+
 ## Todo Steps
 
 - [x] Basic implementation of `EnvironmentPostProcessor` that is "working", i.e. Spring actually calls it. The
