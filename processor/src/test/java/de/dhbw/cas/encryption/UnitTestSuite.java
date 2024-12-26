@@ -4,6 +4,6 @@ import org.junit.platform.suite.api.SelectPackages;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
-@SelectPackages({"de.dhbw.cas.encryption.configuration", "de.dhbw.cas.encryption.util"})
+@SelectPackages({"de.dhbw.cas.encryption.configuration", "de.dhbw.cas.encryption.util", "de.dhbw.cas.encryption.processor"})
 public class UnitTestSuite {
 }
