@@ -35,8 +35,11 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: "Build project with Maven"
-        run: mvn -B package --file pom.xml
+      - name: Build processor with Maven
+        run: cd processor && mvn -B install --file pom.xml
+
+      - name: Build application with Maven
+        run: cd ../demo-app && mvn -B package --file pom.xml
 
       - name: Upload test report
         if: '!cancelled()'
