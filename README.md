@@ -17,7 +17,21 @@ Thus, this is a good starting point.
 JaSypt ultimately was using a similar approach.
 The key difference is that JaSypt uses a custom type of `PropertySource`.
 This means that you have to register the property source yourself.
-This gives the implementer more flexibility, although you also have to correctly configure it. 
+This gives the implementer more flexibility, although you also have to correctly configure it.
+
+Other documentation can be found in the [documentation folder](documentation).
+This includes
+
+* instructions on how to [build and configure](documentation/getting_started.md) the processor for spring
+* a listing of the [properties the processor listens to](documentation/configuration.md)
+* instructions on [how to run the demo app](documentation/running_demo_app.md)
+
+## Folder structure
+
+* [documentation](documentation) as mentioned contains other markdown files documenting the usage of the process etc.
+* [demo-app](demo-app) is an example spring boot application using the processor. The application is extremely simple
+  and only connects to a database. See the [instructions](documentation/running_demo_app.md) for running the demo app
+* [processor](processor) contains the maven project for the processor itself
 
 ## Todo Steps
 
@@ -35,7 +49,8 @@ This gives the implementer more flexibility, although you also have to correctly
 - [x] Handle the case where the algorithm for generating the key is different from the encryption algorithm. This is
   e.g. the case for AES/CBC/PKCS5Padding which is valid for `Cipher` but not for `KeyFactory`
 - [x] Figure out an easy way to tell the processor which properties should actually be processed.
-- [x] Test if elliptic curve cryptography, other asymmetric algorithms (ElGamal) and multi key algorithms can be supported 
+- [x] Test if elliptic curve cryptography, other asymmetric algorithms (ElGamal) and multi key algorithms can be
+  supported
 - [ ] Increase test cases
 - [ ] Improve documentation
-- [ ] Make the project work as a separate dependency
+- [x] Make the project work as a separate dependency
