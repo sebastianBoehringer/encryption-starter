@@ -94,4 +94,23 @@ class DecryptionConfigurationTest {
         Assertions.assertThat(expected).isNotNull();
         Assertions.assertThat(expected.enabled()).isFalse();
     }
+
+    @Test
+    void test_fromEnvironment_failsWhenProvidedPathToKeyIsDirectory() {
+        final MockEnvironment environment = new MockEnvironment()
+                .withProperty(PROPERTY_PREFIX + "key", "properties")
+                .withProperty(PROPERTY_PREFIX + "type", "symmetric")
+                .withProperty(PROPERTY_PREFIX + "transformation", "AES");
+        Assertions.assertThatThrownBy(() -> DecryptionConfiguration.fromEnvironment(environment))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void test_equals_isFalseForDifferentObjects() {
+        final DecryptionConfiguration test = DecryptionConfiguration.fromEnvironment(COMPLETE_ENVIRONMENT);
+
+        Assertions.assertThat(test).isNotEqualTo(COMPLETE_ENVIRONMENT);
+        Assertions.assertThat(test).isNotEqualTo(new Object());
+        Assertions.assertThat(test).isNotEqualTo(PROPERTY_PREFIX);
+    }
 }

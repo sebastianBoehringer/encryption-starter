@@ -55,4 +55,22 @@ class DecryptingPropertiesPostProcessorTest {
                 .isNotEqualTo(DEFAULT_ENCRYPTED_PROPERTY_DECRYPTED_VALUE);
         Assertions.assertThat(environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME)).isEqualTo(preProcessingValue);
     }
+
+    @Test
+    void test_postProcessEnvironment_doesNotFailWhenPropertyIsWronglyEncrypted() throws IOException {
+        final MockEnvironment environment = setupMockEnv("properties/aes-with-invalid-second-encrypted-property.properties");
+        final String preProcessingValue = environment.getProperty("spring.datasource.username");
+        processor.postProcessEnvironment(environment, new SpringApplication());
+        Assertions.assertThat(environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME)).isEqualTo(DEFAULT_ENCRYPTED_PROPERTY_DECRYPTED_VALUE);
+        Assertions.assertThat(environment.getProperty("spring.datasource.username")).isEqualTo(preProcessingValue);
+    }
+
+    @Test
+    void test_postProcessEnvironment_silentlySkipsMissingPropertiesThatShouldBeDecrypted() throws IOException {
+        final MockEnvironment environment = setupMockEnv("properties/des-ede-with-additional-missing-property-to-decrypt.properties");
+        Assertions.assertThat(environment.getProperty("spring.datasource.username")).isNull();
+        processor.postProcessEnvironment(environment, new SpringApplication());
+        Assertions.assertThat(environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME)).isEqualTo(DEFAULT_ENCRYPTED_PROPERTY_DECRYPTED_VALUE);
+        Assertions.assertThat(environment.getProperty("spring.datasource.username")).isNull();
+    }
 }
