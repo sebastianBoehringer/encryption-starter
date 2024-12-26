@@ -87,16 +87,11 @@ class DecryptionConfigurationTest {
     }
 
     @Test
-    void test_fromEnvironment_shouldNotFileOnMissingKeyFileIfDisabled() {
-        final MockEnvironment environment = new MockEnvironment()
-                .withProperty(PROPERTY_PREFIX + "key", "i-do-not-exist.txt")
-                .withProperty(PROPERTY_PREFIX + "transformation", "AES")
-                .withProperty(PROPERTY_PREFIX + "type", "symmetric")
-                .withProperty(PROPERTY_PREFIX + "enabled", "false");
-        final DecryptionConfiguration expected = new DecryptionConfiguration(new byte[0], "AES",
-                new byte[0], TransformationType.SYMMETRIC, new String[0], StandardCharsets.US_ASCII, false
-        );
-        final DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
-        Assertions.assertThat(parsed).isEqualTo(expected);
+    void test_fromEnvironment_succeedsWhenRequiredPropertiesAreMissingButProcessorIsDisabled() {
+        final MockEnvironment environment = new MockEnvironment().withProperty(PROPERTY_PREFIX + "enabled", "false");
+        final DecryptionConfiguration expected = DecryptionConfiguration.fromEnvironment(environment);
+
+        Assertions.assertThat(expected).isNotNull();
+        Assertions.assertThat(expected.enabled()).isFalse();
     }
 }

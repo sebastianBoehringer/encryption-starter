@@ -32,16 +32,25 @@ import java.util.Objects;
  * @param enabled        A flag to determine if decryption should be enabled. Optional, defaults to true
  */
 @NullMarked
-public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv,
-                                      TransformationType type, String[] properties, Charset charset,
-                                      boolean enabled) {
+public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv, TransformationType type,
+                                      String[] properties, Charset charset, boolean enabled) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
     /**
+     * Creates a configuration instance from the given environment
+     * Usually this fails if a required property is missing. But if the processor is disabled, required properties are
+     * also optional.
+     *
      * @param environment The environment to load the properties from
      * @return The loaded configuration
+     * @throws IllegalStateException When a required property is missing or the key could not be loaded from the provided file
      */
-    public static DecryptionConfiguration fromEnvironment(final Environment environment) {
+    public static DecryptionConfiguration fromEnvironment(final Environment environment) throws IllegalStateException {
+        final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
+        if (!enabled) {
+            return new DecryptionConfiguration(new byte[0], "", new byte[0], TransformationType.SYMMETRIC, new String[0],
+                    StandardCharsets.US_ASCII, false);
+        }
         final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key");
         final String transformation = environment.getRequiredProperty(PROPERTY_PREFIX + "transformation");
         final String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
@@ -62,11 +71,10 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
                 //if char set with provided name cannot be found we still default to US_ASCII
             }
         }
-        final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         try {
-            final var key = enabled ? findFile(keyFilePath) : new byte[0];
+            final var key = findFile(keyFilePath);
             return new DecryptionConfiguration(key, transformation, iv, TransformationType.getTransformationType(type),
-                    properties.isEmpty() ? new String[0] : properties.split(","), charset, enabled);
+                    properties.isEmpty() ? new String[0] : properties.split(","), charset, true);
         } catch (IOException e) {
             throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
         }
