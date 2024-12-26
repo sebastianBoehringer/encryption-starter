@@ -21,10 +21,10 @@ class DecryptingPropertiesPostProcessorTest {
     private final DecryptingPropertiesPostProcessor processor = new DecryptingPropertiesPostProcessor(new DeferredLogs());
 
     private MockEnvironment setupMockEnv(String propertyFileName) throws IOException {
-        ClassPathResource propertyFile = new ClassPathResource(propertyFileName);
-        Properties properties = new Properties();
+        final ClassPathResource propertyFile = new ClassPathResource(propertyFileName);
+        final Properties properties = new Properties();
         properties.load(propertyFile.getInputStream());
-        MockEnvironment env = new MockEnvironment();
+        final MockEnvironment env = new MockEnvironment();
         env.getPropertySources().addFirst(new PropertiesPropertySource("mock", properties));
         return env;
     }
@@ -33,7 +33,7 @@ class DecryptingPropertiesPostProcessorTest {
     @ParameterizedTest(name = "can decrypt using {0}")
     @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "des-ede.properties", "ecies.properties", "el-gamal.properties", "rsa.properties"})
     void test_postProcessEnvironment_canDecryptConfiguredPropertyWithMultipleDifferentAlgorithms(String propertyFileName) throws IOException {
-        MockEnvironment environment = setupMockEnv("properties/" + propertyFileName);
+        final MockEnvironment environment = setupMockEnv("properties/" + propertyFileName);
         Assertions.assertThat(environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME))
                 .isNotEqualTo(DEFAULT_ENCRYPTED_PROPERTY_DECRYPTED_VALUE);
         // As we know the actual implementation does not rely on the second parameter we could also pass in null instead
@@ -45,8 +45,8 @@ class DecryptingPropertiesPostProcessorTest {
 
     @Test
     void test_postProcessEnvironment_doesNothingWhenDisabled() throws IOException {
-        MockEnvironment environment = setupMockEnv("properties/unencrypted.properties");
-        String preProcessingValue = environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME);
+        final MockEnvironment environment = setupMockEnv("properties/unencrypted.properties");
+        final String preProcessingValue = environment.getProperty(DEFAULT_ENCRYPTED_PROPERTY_NAME);
         Assertions.assertThat(preProcessingValue).isNotEqualTo(DEFAULT_ENCRYPTED_PROPERTY_DECRYPTED_VALUE);
 
         processor.postProcessEnvironment(environment, new SpringApplication());
