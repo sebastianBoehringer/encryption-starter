@@ -39,11 +39,7 @@ class DecryptingPropertiesPostProcessorTest {
         return env;
     }
 
-
-    @ParameterizedTest(name = "can decrypt using {0}")
-    @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "des-ede.properties", "ecies.properties",
-            "el-gamal.properties", "rsa.properties", "gost.properties"})
-    void test_postProcessEnvironment_canDecryptConfiguredPropertyWithMultipleDifferentAlgorithms(String propertyFileName) throws IOException {
+    private void doDecryptionTesting(String propertyFileName) throws IOException {
         final MockEnvironment environment = setupMockEnv("properties/" + propertyFileName);
         Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY))
                 .isNotEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
@@ -52,6 +48,24 @@ class DecryptingPropertiesPostProcessorTest {
 
         Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY))
                 .isEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
+    }
+
+    @ParameterizedTest(name = "can decrypt using {0}")
+    @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "des-ede.properties", "gost.properties"})
+    void test_postProcessEnvironment_canDecryptUsingSymmetricAlgorithms(String propertyFileName) throws IOException {
+        doDecryptionTesting(propertyFileName);
+    }
+
+    @ParameterizedTest(name = "can decrypt using {0}")
+    @ValueSource(strings = {"el-gamal.properties", "rsa.properties"})
+    void test_postProcessEnvironment_canDecryptUsingAsymmetricAlgorithms(String propertyFileName) throws IOException {
+        doDecryptionTesting(propertyFileName);
+    }
+
+    @ParameterizedTest(name = "can decrypt using {0}")
+    @ValueSource(strings = {"ecies.properties"})
+    void test_postProcessEnvironment_canDecryptUsingEllipticCurveAlgorithms(String propertyFileName) throws IOException {
+        doDecryptionTesting(propertyFileName);
     }
 
     @Test
