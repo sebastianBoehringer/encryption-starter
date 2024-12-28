@@ -18,7 +18,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -81,7 +80,7 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
             if (value != null) {
                 try {
                     String decryptedProperty = decryptor.decrypt(HexConverter.loadBytesFromHexString(value),
-                            configuration.iv(), StandardCharsets.US_ASCII);
+                            configuration.iv(), configuration.charset());
                     log.debug("Decrypted value [" + value + "] of property " + property + " to string of length " +
                             decryptedProperty.length());
                     propertiesToDecrypt.put(property, decryptedProperty);
