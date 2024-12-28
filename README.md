@@ -56,6 +56,7 @@ This includes
 - [x] Figure out an easy way to tell the processor which properties should actually be processed.
 - [x] Test if elliptic curve cryptography, other asymmetric algorithms (ElGamal) and multi key algorithms can be
   supported
-- [ ] Increase test cases
-- [ ] Improve documentation
+- [x] Increase test cases
+- [x] Improve documentation
 - [x] Make the project work as a separate dependency
+- [x] Testcases for authenticated encryption (GCM/CTR mode)
