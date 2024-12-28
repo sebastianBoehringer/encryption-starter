@@ -135,4 +135,24 @@ class DecryptingPropertiesPostProcessorTest {
 
         Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY)).isEqualTo(UMLAUT_SENTENCE);
     }
+
+    /**
+     * Configured IV was used as an {@link javax.crypto.spec.IvParameterSpec} so the {@link javax.crypto.Cipher} requires
+     * it to be set as such.
+     * The current implementation of the {@link de.dhbw.cas.encryption.decryptors.SymmetricDecryptor} correctly detects
+     * the transformation to be in GCM so passes it as {@link javax.crypto.spec.GCMParameterSpec}. This causes decryption
+     * to fail
+     */
+    @Test
+    void test_postProcessEnvironment_failsWhenWrongIvIsPassed() throws IOException {
+        MockEnvironment environment = setupMockEnv("properties/camellia-problem.properties");
+
+        final String propertyPreDecryption = environment.getProperty(PASSWORD_PROPERTY);
+        Assertions.assertThat(propertyPreDecryption).isNotEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
+        processor.postProcessEnvironment(environment, new SpringApplication());
+
+        final String propertyPostDecryption = environment.getProperty(PASSWORD_PROPERTY);
+        Assertions.assertThat(propertyPostDecryption).isNotEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
+        Assertions.assertThat(propertyPreDecryption).isEqualTo(propertyPostDecryption);
+    }
 }
