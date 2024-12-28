@@ -28,6 +28,7 @@ class DecryptingPropertiesPostProcessorTest {
     private static final String APPLICATION_NAME_PROPERTY = "spring.application.name";
     private static final String DECRYPTED_APPLICATION_NAME_PROPERTY_VALUE = "encryption-starter";
 
+    private static final String UMLAUT_SENTENCE = "Die süße Hündin läuft in die Höhle des Bären, der sie zum Teekränzchen eingeladen hat, da sie seine drei schönen Krönchen gerettet hat";
     private final DecryptingPropertiesPostProcessor processor = new DecryptingPropertiesPostProcessor(new DeferredLogs());
 
     private MockEnvironment setupMockEnv(String propertyFileName) throws IOException {
@@ -123,5 +124,15 @@ class DecryptingPropertiesPostProcessorTest {
 
         Assertions.assertThat(environment.getProperty(APPLICATION_NAME_PROPERTY)).isNotEqualTo(preprocessedName);
         Assertions.assertThat(environment.getProperty(APPLICATION_NAME_PROPERTY)).isEqualTo(DECRYPTED_APPLICATION_NAME_PROPERTY_VALUE);
+    }
+
+    @Test
+    void test_postProcessEnvironment_canProcessNonAsciiSymbolsWhenConfiguredForIt() throws IOException {
+        final MockEnvironment environment = setupMockEnv("properties/aes-128-gcm.properties");
+        Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY)).isNotEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
+        Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY)).isNotEqualTo(UMLAUT_SENTENCE);
+        processor.postProcessEnvironment(environment, new SpringApplication());
+
+        Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY)).isEqualTo(UMLAUT_SENTENCE);
     }
 }
