@@ -54,6 +54,7 @@ class DecryptingPropertiesPostProcessorTest {
     @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "aria-cbc.properties", "blowfish.properties",
             "camellia.properties", "cast5.properties", "cast6.properties", "chacha.properties", "des-ede.properties",
             "gost.properties", "sm4.properties"})
+            "gost28147.properties", "grainv1.properties", "grain128.properties", "sm4.properties"})
     void test_postProcessEnvironment_canDecryptUsingSymmetricAlgorithms(String propertyFileName) throws IOException {
         doDecryptionTesting(propertyFileName);
     }
