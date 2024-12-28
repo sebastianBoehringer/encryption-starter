@@ -52,7 +52,8 @@ class DecryptingPropertiesPostProcessorTest {
 
     @ParameterizedTest(name = "can decrypt using {0}")
     @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "aria-cbc.properties", "blowfish.properties",
-            "camellia.properties", "cast5.properties", "des-ede.properties", "gost.properties", "sm4.properties"})
+            "camellia.properties", "cast5.properties", "cast6.properties", "chacha.properties", "des-ede.properties",
+            "gost.properties", "sm4.properties"})
     void test_postProcessEnvironment_canDecryptUsingSymmetricAlgorithms(String propertyFileName) throws IOException {
         doDecryptionTesting(propertyFileName);
     }
@@ -102,7 +103,7 @@ class DecryptingPropertiesPostProcessorTest {
 
     @Test
     void test_postProcessEnvironment_correctlyDecryptsMultiplePropertiesIfConfigured() throws IOException {
-        final MockEnvironment environment = setupMockEnv("properties/gost.properties");
+        final MockEnvironment environment = setupMockEnv("properties/gost28147.properties");
         final String preprocessedUsername = environment.getProperty(USERNAME_PROPERTY);
         final String preprocessedPassword = environment.getProperty(PASSWORD_PROPERTY);
         final String preprocessedUrl = environment.getProperty(URL_PROPERTY);
