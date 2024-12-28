@@ -40,7 +40,7 @@ class DecryptingPropertiesPostProcessorTest {
     }
 
     private void doDecryptionTesting(String propertyFileName) throws IOException {
-        final MockEnvironment environment = setupMockEnv("properties/" + propertyFileName);
+        final MockEnvironment environment = setupMockEnv("properties/" + propertyFileName + ".properties");
         Assertions.assertThat(environment.getProperty(PASSWORD_PROPERTY))
                 .isNotEqualTo(DECRYPTED_PASSWORD_PROPERTY_VALUE);
         // As we know the actual implementation does not rely on the second parameter we could also pass in null instead
@@ -51,22 +51,20 @@ class DecryptingPropertiesPostProcessorTest {
     }
 
     @ParameterizedTest(name = "can decrypt using {0}")
-    @ValueSource(strings = {"aes.properties", "aes-cbc.properties", "aria-cbc.properties", "blowfish.properties",
-            "camellia.properties", "cast5.properties", "cast6.properties", "chacha.properties", "des-ede.properties",
-            "gost.properties", "sm4.properties"})
-            "gost28147.properties", "grainv1.properties", "grain128.properties", "sm4.properties"})
+    @ValueSource(strings = {"aes", "aes-cbc", "aria-cbc", "blowfish", "camellia", "cast5", "cast6", "chacha", "des-ede",
+            "gost28147", "grainv1", "grain128", "sm4"})
     void test_postProcessEnvironment_canDecryptUsingSymmetricAlgorithms(String propertyFileName) throws IOException {
         doDecryptionTesting(propertyFileName);
     }
 
     @ParameterizedTest(name = "can decrypt using {0}")
-    @ValueSource(strings = {"el-gamal.properties", "rsa.properties"})
+    @ValueSource(strings = {"el-gamal", "rsa"})
     void test_postProcessEnvironment_canDecryptUsingAsymmetricAlgorithms(String propertyFileName) throws IOException {
         doDecryptionTesting(propertyFileName);
     }
 
     @ParameterizedTest(name = "can decrypt using {0}")
-    @ValueSource(strings = {"ecies.properties"})
+    @ValueSource(strings = {"ecies"})
     void test_postProcessEnvironment_canDecryptUsingEllipticCurveAlgorithms(String propertyFileName) throws IOException {
         doDecryptionTesting(propertyFileName);
     }
