@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * This record encapsulates the configuration for {@link de.dhbw.cas.encryption.processor.DecryptingPropertiesPostProcessor}.
@@ -30,10 +31,11 @@ import java.util.Objects;
  * @param properties     A list of property names to decode. Optional, defaults to an empty array
  * @param charset        The charset to use for the decrypted strings. Optional, defaults to US_ASCII
  * @param enabled        A flag to determine if decryption should be enabled. Optional, defaults to true
+ * @param wrappingKey    The key used when wrapping or key encapsulation is used
  */
 @NullMarked
 public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv, TransformationType type,
-                                      String[] properties, Charset charset, boolean enabled) {
+                                      String[] properties, Charset charset, boolean enabled, byte[] wrappingKey) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
     /**
@@ -49,7 +51,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         if (!enabled) {
             return new DecryptionConfiguration(new byte[0], "", new byte[0], TransformationType.SYMMETRIC, new String[0],
-                    StandardCharsets.US_ASCII, false);
+                    StandardCharsets.US_ASCII, false, new byte[0]);
         }
         final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key");
         final String transformation = environment.getRequiredProperty(PROPERTY_PREFIX + "transformation");
@@ -63,6 +65,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         final String type = environment.getRequiredProperty(PROPERTY_PREFIX + "type");
         final String properties = environment.getProperty(PROPERTY_PREFIX + "properties", "");
         final String charsetName = environment.getProperty(PROPERTY_PREFIX + "charset", StandardCharsets.US_ASCII.name());
+        final String wrappingKeyFilePath = environment.getProperty(PROPERTY_PREFIX + "wrapping-key", "");
         Charset charset = StandardCharsets.US_ASCII;
         if (!charsetName.isEmpty()) {
             try {
@@ -73,23 +76,26 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         }
         try {
             final var key = findFile(keyFilePath);
-            return new DecryptionConfiguration(key, transformation, iv, TransformationType.getTransformationType(type),
-                    properties.isEmpty() ? new String[0] : properties.split(","), charset, true);
+            return new DecryptionConfiguration(key.orElseThrow(() -> new IllegalStateException("Key was not found")),
+                    transformation, iv, TransformationType.getTransformationType(type),
+                    properties.isEmpty() ? new String[0] : properties.split(","), charset, true,
+                    findFile(wrappingKeyFilePath).orElse(new byte[0]));
         } catch (IOException e) {
             throw new IllegalStateException("Could not load key data from file " + keyFilePath, e);
         }
     }
 
-    private static byte[] findFile(final String path) throws IOException {
+    private static Optional<byte[]> findFile(final String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
             file = new ClassPathResource(path).getFile();
         }
         if (file.exists() && file.isFile()) {
-            return HexConverter.loadBytesFromFile(file);
+            return Optional.of(HexConverter.loadBytesFromFile(file));
         }
-        throw new IllegalStateException("File not found in either file system or class path: " + path);
+        return Optional.empty();
     }
+
 
     @Override
     public String toString() {
@@ -101,6 +107,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
                 ", properties=" + Arrays.toString(properties) +
                 ", charset=" + charset +
                 ", enabled=" + enabled +
+                ", wrappingKey=" + Arrays.toString(wrappingKey) +
                 '}';
     }
 
@@ -108,16 +115,17 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
     public boolean equals(@Nullable final Object o) {
         if (!(o instanceof DecryptionConfiguration(
                 byte[] otherKey, String otherTransformation, byte[] otherIv, TransformationType otherType,
-                String[] otherProperties, Charset otherCharset, boolean otherEnabled
+                String[] otherProperties, Charset otherCharset, boolean otherEnabled, byte[] otherWrappingKey
         ))) return false;
         return Objects.equals(type, otherType) && Objects.deepEquals(iv, otherIv) && Objects.deepEquals(key, otherKey)
                 && Objects.equals(charset, otherCharset) && Objects.equals(transformation, otherTransformation)
-                && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled);
+                && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled)
+                && Objects.deepEquals(wrappingKey, otherWrappingKey);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(Arrays.hashCode(key), transformation, Arrays.hashCode(iv), type,
-                Arrays.hashCode(properties), charset, enabled);
+                Arrays.hashCode(properties), charset, enabled, Arrays.hashCode(wrappingKey));
     }
 }
