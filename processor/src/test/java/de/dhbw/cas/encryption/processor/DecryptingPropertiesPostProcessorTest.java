@@ -72,6 +72,12 @@ class DecryptingPropertiesPostProcessorTest {
         doDecryptionTesting(propertyFileName);
     }
 
+    @ParameterizedTest(name = "can unwrap and decrypt using {0}")
+    @ValueSource(strings = "wrapped")
+    void test_postProcessEnvironment_canDecryptUsingKeyUnwrappingBeforeDecrypting(String propertyFileName) throws IOException {
+        doDecryptionTesting(propertyFileName);
+    }
+
     @Test
     void test_postProcessEnvironment_doesNothingWhenDisabled() throws IOException {
         final MockEnvironment environment = setupMockEnv("properties/unencrypted.properties");
