@@ -63,7 +63,7 @@ public class SymmetricDecryptor implements TextDecryptor {
     private AlgorithmParameterSpec guessCorrectParameter(byte[] iv) throws InvalidParameterSpecException {
         if (cipher.getParameters() != null) {
             return switch (cipher.getParameters().getParameterSpec(AlgorithmParameterSpec.class)) {
-                case GCMParameterSpec g -> new GCMParameterSpec(iv.length, iv);
+                case final GCMParameterSpec ignored -> new GCMParameterSpec(iv.length, iv);
                 default -> new IvParameterSpec(iv);
             };
         } else {
