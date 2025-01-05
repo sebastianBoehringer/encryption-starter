@@ -44,8 +44,6 @@ This includes
   symmetric cypher. See `UnwrappingDecryptor#TRANSFORMATION_USED_WITH_UNWRAPPED_KEY`
 * When using WRAPPING type transformations the provided wrapping key is treated as the private key. This key is also
   expected to be in ANS.1/PKCS8 format
-* For ECIES/ elliptic curve the processor currently cannot configure different curves and thus uses the default option.
-  As the processor registers bouncy castle the default is the prime239v1 curve. This may differ on different systems
 
 ## Todo Steps
 
