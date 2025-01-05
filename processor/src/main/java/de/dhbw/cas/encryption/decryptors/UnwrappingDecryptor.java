@@ -21,12 +21,12 @@ public class UnwrappingDecryptor implements TextDecryptor {
     public static String TRANSFORMATION_USED_WITH_UNWRAPPED_KEY = "AES/CBC/PKCS5Padding";
     private final TextDecryptor textDecryptor;
 
-    public UnwrappingDecryptor(final String transformation, final byte[] wrappedKeyBytes, final byte[] wrappingKey) throws DecryptionException {
+    public UnwrappingDecryptor(final String transformation, final byte[] wrappedKeyBytes, final byte[] unwrapKeyBytes) throws DecryptionException {
         try {
             final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.getAlgorithmFromTransformation(transformation));
-            final Key unrwapKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(wrappingKey));
+            final Key unwrapKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(unwrapKeyBytes));
             final Cipher unwrapCipher = Cipher.getInstance(transformation);
-            unwrapCipher.init(Cipher.UNWRAP_MODE, unrwapKey);
+            unwrapCipher.init(Cipher.UNWRAP_MODE, unwrapKey);
             textDecryptor = new SymmetricDecryptor(TRANSFORMATION_USED_WITH_UNWRAPPED_KEY,
                     unwrapCipher.unwrap(wrappedKeyBytes, TRANSFORMATION_USED_WITH_UNWRAPPED_KEY, Cipher.SECRET_KEY).getEncoded());
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeySpecException | InvalidKeyException e) {
