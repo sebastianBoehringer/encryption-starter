@@ -5,11 +5,15 @@ import de.dhbw.cas.encryption.util.AlgorithmUtil;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
+import javax.crypto.DecapsulateException;
 import javax.crypto.KEM;
 import javax.crypto.SecretKey;
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 @NullMarked
@@ -26,7 +30,7 @@ public class KemDecryptor implements TextDecryptor {
             final KEM.Decapsulator decapsulator = kem.newDecapsulator(privateKey);
             final SecretKey decapsulate = decapsulator.decapsulate(encapsulatedKey);
             delegate = new SymmetricDecryptor(UnwrappingDecryptor.TRANSFORMATION_USED_WITH_UNWRAPPED_KEY, null, decapsulate.getEncoded());
-        } catch (Exception e) {
+        } catch (DecapsulateException | NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException e) {
             throw new DecryptionException(e);
         }
     }
