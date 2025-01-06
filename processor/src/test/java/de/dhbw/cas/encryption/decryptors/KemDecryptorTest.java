@@ -13,10 +13,10 @@ import java.security.*;
 
 class KemDecryptorTest {
 
-    final String KEY_PAIR_ALGO = "X25519";
+    final String X25519_KEY_PAIR_ALGO = "X25519";
 
     private KeyPair generateX25519KeyPair() throws NoSuchAlgorithmException {
-        final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_PAIR_ALGO);
+        final KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(X25519_KEY_PAIR_ALGO);
         return keyPairGenerator.generateKeyPair();
     }
 
@@ -36,7 +36,7 @@ class KemDecryptorTest {
         final String message = "KEM makes this go post quantum";
         final byte[] encrypted = aes.doFinal(message.getBytes(StandardCharsets.UTF_8));
 
-        TextDecryptor decryptor = new KemDecryptor(kemTransformation, KEY_PAIR_ALGO, encapsulated.encapsulation(), kp.getPrivate().getEncoded());
+        TextDecryptor decryptor = new KemDecryptor(kemTransformation, X25519_KEY_PAIR_ALGO, encapsulated.encapsulation(), kp.getPrivate().getEncoded());
         Assertions.assertThat(decryptor.decrypt(encrypted, iv.getIV(), StandardCharsets.UTF_8)).isEqualTo(message);
     }
 
