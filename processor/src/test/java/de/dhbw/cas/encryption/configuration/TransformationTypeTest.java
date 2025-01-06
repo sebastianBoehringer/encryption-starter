@@ -13,7 +13,6 @@ class TransformationTypeTest {
         return Stream.of(
                 Arguments.of("symmetric", TransformationType.SYMMETRIC),
                 Arguments.of("aSYmmetric", TransformationType.ASYMMETRIC),
-                Arguments.of("eLlIpTiC_CuRvE", TransformationType.ELLIPTIC_CURVE),
                 Arguments.of("WRAPPING", TransformationType.WRAPPING)
         );
     }

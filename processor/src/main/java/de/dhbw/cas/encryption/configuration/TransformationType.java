@@ -8,10 +8,6 @@ public enum TransformationType {
      */
     ASYMMETRIC,
     /**
-     * For transformations using an algorithm based on elliptic curves. ECIES etc.
-     */
-    ELLIPTIC_CURVE,
-    /**
      * For transformations using a type algorithm. AES etc.
      */
     SYMMETRIC,
