@@ -16,7 +16,13 @@ public enum TransformationType {
      * The wrapping cipher is assumed to be asymmetric. The key is used for
      * {@link de.dhbw.cas.encryption.decryptors.UnwrappingDecryptor#TRANSFORMATION_USED_WITH_UNWRAPPED_KEY}.
      */
-    WRAPPING;
+    WRAPPING,
+    /**
+     * For transformations that rely on key encapsulation mechanisms (KEMs)
+     * The encapsulating cipher is assumed to be asymmetric. The key is used for
+     * {@link de.dhbw.cas.encryption.decryptors.UnwrappingDecryptor#TRANSFORMATION_USED_WITH_UNWRAPPED_KEY}.
+     */
+    KEM;
 
     /**
      * @param type The type to convert to an enum instance. The type is converted to upper case

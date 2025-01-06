@@ -13,6 +13,7 @@ class TransformationTypeTest {
         return Stream.of(
                 Arguments.of("symmetric", TransformationType.SYMMETRIC),
                 Arguments.of("aSYmmetric", TransformationType.ASYMMETRIC),
+                Arguments.of("kEm", TransformationType.KEM),
                 Arguments.of("WRAPPING", TransformationType.WRAPPING)
         );
     }
