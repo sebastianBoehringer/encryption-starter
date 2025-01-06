@@ -26,6 +26,7 @@ import java.util.Optional;
  *                       containing the key. This should usually be an absolute path to search the file system. If no file
  *                       with the given name exists there the classpath is searched instead
  * @param transformation The transformation to use to decrypt the properties. Required
+ * @param keyAlgorithm   The algorithm for key generation. This is optional. If not present the algorithm is derived from the transformation
  * @param iv             The initialization vector to use. Optional, defaults to an empty array
  * @param type           The type of algorithm the transformation is based on. Required
  * @param properties     A list of property names to decode. Optional, defaults to an empty array
@@ -34,8 +35,9 @@ import java.util.Optional;
  * @param wrappingKey    The key used when wrapping or key encapsulation is used
  */
 @NullMarked
-public record DecryptionConfiguration(byte[] key, String transformation, byte[] iv, TransformationType type,
-                                      String[] properties, Charset charset, boolean enabled, byte[] wrappingKey) {
+public record DecryptionConfiguration(byte[] key, String transformation, @Nullable String keyAlgorithm, byte[] iv,
+                                      TransformationType type, String[] properties, Charset charset, boolean enabled,
+                                      byte[] wrappingKey) {
     public static final String PROPERTY_PREFIX = "dhbw.cas.decryption.";
 
     /**
@@ -50,11 +52,12 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
     public static DecryptionConfiguration fromEnvironment(final Environment environment) throws IllegalStateException {
         final boolean enabled = Boolean.parseBoolean(environment.getProperty(PROPERTY_PREFIX + "enabled", Boolean.TRUE.toString()));
         if (!enabled) {
-            return new DecryptionConfiguration(new byte[0], "", new byte[0], TransformationType.SYMMETRIC, new String[0],
+            return new DecryptionConfiguration(new byte[0], "", "", new byte[0], TransformationType.SYMMETRIC, new String[0],
                     StandardCharsets.US_ASCII, false, new byte[0]);
         }
         final String keyFilePath = environment.getRequiredProperty(PROPERTY_PREFIX + "key");
         final String transformation = environment.getRequiredProperty(PROPERTY_PREFIX + "transformation");
+        final String keyAlgorithm = environment.getProperty(PROPERTY_PREFIX + "key-algorithm");
         final String ivHex = environment.getProperty(PROPERTY_PREFIX + "iv", "");
         byte[] iv;
         if (ivHex.isEmpty()) {
@@ -77,7 +80,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         try {
             final var key = findFile(keyFilePath);
             return new DecryptionConfiguration(key.orElseThrow(() -> new IllegalStateException("Key was not found")),
-                    transformation, iv, TransformationType.getTransformationType(type),
+                    transformation, keyAlgorithm, iv, TransformationType.getTransformationType(type),
                     properties.isEmpty() ? new String[0] : properties.split(","), charset, true,
                     findFile(wrappingKeyFilePath).orElse(new byte[0]));
         } catch (IOException e) {
@@ -102,6 +105,7 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
         return "DecryptionConfiguration{" +
                 "key=" + Arrays.toString(key) +
                 ", transformation='" + transformation + '\'' +
+                ", keyAlgorithm='" + keyAlgorithm + '\'' +
                 ", iv=" + Arrays.toString(iv) +
                 ", type=" + type +
                 ", properties=" + Arrays.toString(properties) +
@@ -114,18 +118,19 @@ public record DecryptionConfiguration(byte[] key, String transformation, byte[] 
     @Override
     public boolean equals(@Nullable final Object o) {
         if (!(o instanceof DecryptionConfiguration(
-                byte[] otherKey, String otherTransformation, byte[] otherIv, TransformationType otherType,
+                byte[] otherKey, String otherTransformation, String otherKeyAlgorithm, byte[] otherIv,
+                TransformationType otherType,
                 String[] otherProperties, Charset otherCharset, boolean otherEnabled, byte[] otherWrappingKey
         ))) return false;
         return Objects.equals(type, otherType) && Objects.deepEquals(iv, otherIv) && Objects.deepEquals(key, otherKey)
                 && Objects.equals(charset, otherCharset) && Objects.equals(transformation, otherTransformation)
                 && Objects.deepEquals(properties, otherProperties) && Objects.equals(enabled, otherEnabled)
-                && Objects.deepEquals(wrappingKey, otherWrappingKey);
+                && Objects.deepEquals(wrappingKey, otherWrappingKey) && Objects.equals(keyAlgorithm, otherKeyAlgorithm);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Arrays.hashCode(key), transformation, Arrays.hashCode(iv), type,
+        return Objects.hash(Arrays.hashCode(key), transformation, keyAlgorithm, Arrays.hashCode(iv), type,
                 Arrays.hashCode(properties), charset, enabled, Arrays.hashCode(wrappingKey));
     }
 }

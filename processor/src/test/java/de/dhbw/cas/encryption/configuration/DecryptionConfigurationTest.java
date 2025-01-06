@@ -23,6 +23,7 @@ class DecryptionConfigurationTest {
             .withProperty(PROPERTY_PREFIX + "properties", "spring.datasource.password,spring.data.mongodb.password")
             .withProperty(PROPERTY_PREFIX + "charset", "UTF-8")
             .withProperty(PROPERTY_PREFIX + "enabled", "true")
+            .withProperty(PROPERTY_PREFIX + "key-algorithm", "AES")
             .withProperty(PROPERTY_PREFIX + "wrapping-key", "single-hex-line.txt");
 
     static Stream<Arguments> incompleteConfigurations() {
@@ -64,7 +65,7 @@ class DecryptionConfigurationTest {
     @Test
     void test_fromEnvironment_parsesCompleteConfiguration() {
         final DecryptionConfiguration expected = new DecryptionConfiguration(
-                "Never gonna let you down".getBytes(StandardCharsets.UTF_8), "AES",
+                "Never gonna let you down".getBytes(StandardCharsets.UTF_8), "AES", "AES",
                 "AF".getBytes(StandardCharsets.US_ASCII), TransformationType.SYMMETRIC,
                 new String[]{"spring.datasource.password", "spring.data.mongodb.password"}, StandardCharsets.UTF_8,
                 true, "Never gonna let you down".getBytes(StandardCharsets.UTF_8)
@@ -81,7 +82,7 @@ class DecryptionConfigurationTest {
                 .withProperty(PROPERTY_PREFIX + "type", "symmetric");
 
         final DecryptionConfiguration expected = new DecryptionConfiguration(
-                "Never gonna let you down".getBytes(StandardCharsets.US_ASCII), "AES", new byte[0],
+                "Never gonna let you down".getBytes(StandardCharsets.US_ASCII), "AES", null, new byte[0],
                 TransformationType.SYMMETRIC, new String[0], StandardCharsets.US_ASCII, true, new byte[0]);
         final DecryptionConfiguration parsed = DecryptionConfiguration.fromEnvironment(environment);
         Assertions.assertThat(parsed).isEqualTo(expected);
