@@ -101,4 +101,11 @@ class HexConverterTest {
         Assertions.assertThat(file).exists();
         Assertions.assertThatThrownBy(() -> HexConverter.loadBytesFromFile(file)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void test_loadBytesFromFile_throwsIllegalArgumentExceptionOnEmptyFile() {
+        final File file = new File("./src/test/resources/empty-file.txt");
+        Assertions.assertThat(file).exists();
+        Assertions.assertThatThrownBy(() -> HexConverter.loadBytesFromFile(file)).isInstanceOf(IllegalArgumentException.class);
+    }
 }

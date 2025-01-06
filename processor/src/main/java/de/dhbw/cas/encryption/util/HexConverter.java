@@ -40,10 +40,13 @@ public final class HexConverter {
      *
      * @param file The file containing a hex string
      * @return The bytes converted from the hex string
-     * @throws IllegalArgumentException If the provided string is not in hex format
+     * @throws IllegalArgumentException If the provided string is not in hex format or the given file is empty
      * @throws IOException              If anything goes wrong while reading the file
      */
     public static byte[] loadBytesFromFile(final File file) throws IllegalArgumentException, IOException {
+        if (file.length() == 0) {
+            throw new IllegalArgumentException("File is empty");
+        }
         try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
             final String firstLine = fileReader.readLine();
             return loadBytesFromHexString(firstLine);
