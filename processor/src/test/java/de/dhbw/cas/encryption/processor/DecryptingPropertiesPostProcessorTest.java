@@ -31,6 +31,7 @@ class DecryptingPropertiesPostProcessorTest {
     private static final String UMLAUT_SENTENCE = "Die süße Hündin läuft in die Höhle des Bären, der sie zum Teekränzchen eingeladen hat, da sie seine drei schönen Krönchen gerettet hat";
     private final DecryptingPropertiesPostProcessor processor = new DecryptingPropertiesPostProcessor(new DeferredLogs());
 
+
     private MockEnvironment setupMockEnv(String propertyFileName) throws IOException {
         final ClassPathResource propertyFile = new ClassPathResource(propertyFileName);
         final Properties properties = new Properties();

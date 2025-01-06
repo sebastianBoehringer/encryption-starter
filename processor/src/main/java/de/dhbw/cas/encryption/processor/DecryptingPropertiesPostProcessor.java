@@ -1,7 +1,10 @@
 package de.dhbw.cas.encryption.processor;
 
 import de.dhbw.cas.encryption.configuration.DecryptionConfiguration;
-import de.dhbw.cas.encryption.decryptors.*;
+import de.dhbw.cas.encryption.decryptors.AsymmetricDecryptor;
+import de.dhbw.cas.encryption.decryptors.SymmetricDecryptor;
+import de.dhbw.cas.encryption.decryptors.TextDecryptor;
+import de.dhbw.cas.encryption.decryptors.UnwrappingDecryptor;
 import de.dhbw.cas.encryption.exception.DecryptionException;
 import de.dhbw.cas.encryption.util.HexConverter;
 import org.apache.commons.logging.Log;
@@ -53,10 +56,15 @@ public class DecryptingPropertiesPostProcessor implements EnvironmentPostProcess
             }
             log.debug("Successfully parsed configuration [" + configuration + "]. Creating decryptor");
             final TextDecryptor decryptor = switch (configuration.type()) {
-                case SYMMETRIC -> new SymmetricDecryptor(configuration.transformation(), configuration.key());
-                case ASYMMETRIC -> new AsymmetricDecryptor(configuration.transformation(), configuration.key());
-                case ELLIPTIC_CURVE -> new EllipticCurveDecryptor(configuration.transformation(), configuration.key());
-                case WRAPPING -> new UnwrappingDecryptor(configuration.transformation(), configuration.key(), configuration.wrappingKey());
+                case SYMMETRIC ->
+                        new SymmetricDecryptor(configuration.transformation(), configuration.keyAlgorithm(),
+                                configuration.key());
+                case ASYMMETRIC ->
+                        new AsymmetricDecryptor(configuration.transformation(), configuration.keyAlgorithm(),
+                                configuration.key());
+                case WRAPPING ->
+                        new UnwrappingDecryptor(configuration.transformation(), configuration.keyAlgorithm(),
+                                configuration.key(), configuration.wrappingKey());
             };
             log.debug("Successfully created Decryptor [" + decryptor + "]. Starting to decrypt properties: " +
                     Arrays.toString(configuration.properties()));

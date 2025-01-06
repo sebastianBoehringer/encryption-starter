@@ -31,7 +31,7 @@ class SymmetricDecryptorTest {
         final byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
         byte[] encrypted = aes.doFinal(messageBytes);
 
-        final TextDecryptor decryptor = new SymmetricDecryptor(transformation, key.getEncoded());
+        final TextDecryptor decryptor = new SymmetricDecryptor(transformation, null, key.getEncoded());
         final String decrypted = decryptor.decrypt(encrypted, null, StandardCharsets.UTF_8);
         Assertions.assertThat(decrypted).isEqualTo(message);
     }
@@ -39,20 +39,21 @@ class SymmetricDecryptorTest {
     @Test
     void test_constructor_failsForUnknownAlgorithm() throws NoSuchAlgorithmException {
         final SecretKey secretKey = generateAesKey();
-        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("ILLEGAL", secretKey.getEncoded()))
+        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("ILLEGAL", null, secretKey.getEncoded()))
                 .isInstanceOf(DecryptionException.class);
     }
 
     @Test
     void test_constructor_failsForUnknownTransformation() throws NoSuchAlgorithmException {
         final SecretKey secretKey = generateAesKey();
-        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES/ILLEGAL", secretKey.getEncoded()))
-        .isInstanceOf(DecryptionException.class);
+        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES/ILLEGAL", null, secretKey.getEncoded()))
+                .isInstanceOf(DecryptionException.class);
     }
+
     @Test
     void test_constructor_failsForUnknownPadding() throws NoSuchAlgorithmException {
         final SecretKey secretKey = generateAesKey();
-        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES/ECB/ILLEGAL_PADDING", secretKey.getEncoded()))
+        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES/ECB/ILLEGAL_PADDING", null, secretKey.getEncoded()))
                 .isInstanceOf(DecryptionException.class);
     }
 
@@ -62,9 +63,9 @@ class SymmetricDecryptorTest {
         rsaGenerator.initialize(2048);
         final KeyPair keyPair = rsaGenerator.generateKeyPair();
 
-        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES_256", keyPair.getPublic().getEncoded()))
+        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES_256", null, keyPair.getPublic().getEncoded()))
                 .isInstanceOf(DecryptionException.class);
-        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES_256", keyPair.getPrivate().getEncoded()))
+        Assertions.assertThatThrownBy(() -> new SymmetricDecryptor("AES_256", null, keyPair.getPrivate().getEncoded()))
                 .isInstanceOf(DecryptionException.class);
     }
 }

@@ -44,7 +44,7 @@ class UnwrappingDecryptorTest {
         final String message = "Wrapping and unwrapping can take some time";
         final byte[] encrypted = encryptingCipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
 
-        final TextDecryptor decryptor = new UnwrappingDecryptor(transformation, wrappedKey, keyPair.getPrivate().getEncoded());
+        final TextDecryptor decryptor = new UnwrappingDecryptor(transformation, null, wrappedKey, keyPair.getPrivate().getEncoded());
         final String decrypted = decryptor.decrypt(encrypted, iv.getIV(), StandardCharsets.UTF_8);
         Assertions.assertThat(decrypted).isEqualTo(message);
     }
@@ -60,7 +60,7 @@ class UnwrappingDecryptorTest {
         final Cipher wrappingCipher = Cipher.getInstance(transformation);
         wrappingCipher.init(Cipher.WRAP_MODE, wrappingKey);
         byte[] wrappedKey = wrappingCipher.wrap(aesKey);
-        Assertions.assertThatThrownBy(() -> new UnwrappingDecryptor("ILLEGAL", wrappedKey, keyPair.getPrivate().getEncoded()))
+        Assertions.assertThatThrownBy(() -> new UnwrappingDecryptor("ILLEGAL", null, wrappedKey, keyPair.getPrivate().getEncoded()))
                 .isInstanceOf(DecryptionException.class);
     }
 
@@ -75,7 +75,7 @@ class UnwrappingDecryptorTest {
         final Cipher wrappingCipher = Cipher.getInstance(transformation);
         wrappingCipher.init(Cipher.WRAP_MODE, wrappingKey);
         byte[] wrappedKey = wrappingCipher.wrap(aesKey);
-        Assertions.assertThatThrownBy(() -> new UnwrappingDecryptor("ILLEGAL", wrappedKey, keyPair.getPublic().getEncoded()))
+        Assertions.assertThatThrownBy(() -> new UnwrappingDecryptor("ILLEGAL", null, wrappedKey, keyPair.getPublic().getEncoded()))
                 .isInstanceOf(DecryptionException.class);
     }
 }

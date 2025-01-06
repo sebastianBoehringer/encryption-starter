@@ -22,10 +22,10 @@ public class AsymmetricDecryptor implements TextDecryptor {
     private final Cipher cipher;
     private final PrivateKey privateKey;
 
-    public AsymmetricDecryptor(final String transformation, final byte[] key)
+    public AsymmetricDecryptor(final String transformation, @Nullable final String keyAlgorithm, final byte[] key)
             throws DecryptionException {
         try {
-            final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.getAlgorithmFromTransformation(transformation));
+            final KeyFactory keyFactory = KeyFactory.getInstance(AlgorithmUtil.determineKeyAlgorithm(transformation, keyAlgorithm));
             privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(key));
             cipher = Cipher.getInstance(transformation);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException e) {

@@ -27,10 +27,10 @@ public class SymmetricDecryptor implements TextDecryptor {
     private final Key key;
     private final Cipher cipher;
 
-    public SymmetricDecryptor(final String transformation, final byte[] keyBytes)
+    public SymmetricDecryptor(final String transformation, @Nullable final String keyAlgorithm, final byte[] keyBytes)
             throws DecryptionException {
         try {
-            key = new SecretKeySpec(keyBytes, AlgorithmUtil.getAlgorithmFromTransformation(transformation));
+            key = new SecretKeySpec(keyBytes, AlgorithmUtil.determineKeyAlgorithm(transformation, keyAlgorithm));
             cipher = Cipher.getInstance(transformation);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new DecryptionException(e);
