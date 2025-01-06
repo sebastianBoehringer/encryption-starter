@@ -79,6 +79,12 @@ class DecryptingPropertiesPostProcessorTest {
         doDecryptionTesting(propertyFileName);
     }
 
+    @ParameterizedTest(name = "can decapsulate and decrypt using {0}")
+    @ValueSource(strings = "dh-kem")
+    void test_postProcessEnvironment_canDecryptUsingKem(String propertyFileName) throws IOException {
+        doDecryptionTesting(propertyFileName);
+    }
+
     @Test
     void test_postProcessEnvironment_doesNothingWhenDisabled() throws IOException {
         final MockEnvironment environment = setupMockEnv("properties/unencrypted.properties");
