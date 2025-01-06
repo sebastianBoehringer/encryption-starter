@@ -20,10 +20,29 @@ class AlgorithmUtilTest {
         );
     }
 
+    static Stream<Arguments> transformationsKeyAlgorithmsAndExpectedAlgorithms() {
+        return Stream.of(
+                Arguments.of("ECIES", null, "ECIES"),
+                Arguments.of("ECIES", "EC", "EC"),
+                Arguments.of("AES/CBC/PKCS5Padding", null, "AES"),
+                Arguments.of("AES_192", null, "AES"),
+                Arguments.of("RSA", null, "RSA"),
+                Arguments.of("RSA/ECB/PKCS1Padding", null, "RSA"),
+                Arguments.of("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", null, "RSA")
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("transformationsAndExpectedAlgorithms")
     void test_getAlgorithmFromTransformation_correctlyGetsAlgorithm(final String transformation, final String expected) {
         final String determinedAlgorithm = AlgorithmUtil.getAlgorithmFromTransformation(transformation);
+        Assertions.assertThat(determinedAlgorithm).isEqualTo(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("transformationsKeyAlgorithmsAndExpectedAlgorithms")
+    void test_determineKeyAlgorithm_correctlyGetsAlgorithm(final String transformation, final String algorithm, final String expected) {
+        final String determinedAlgorithm = AlgorithmUtil.determineKeyAlgorithm(transformation, algorithm);
         Assertions.assertThat(determinedAlgorithm).isEqualTo(expected);
     }
 }

@@ -1,6 +1,7 @@
 package de.dhbw.cas.encryption.util;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 @NullMarked
 public final class AlgorithmUtil {
@@ -13,8 +14,7 @@ public final class AlgorithmUtil {
      * This does not interop with the algorithm needed by {@link java.security.KeyFactory} or {@link javax.crypto.spec.SecretKeySpec}.
      * <p>
      * Technically AES can be specified to support only one key size with e.g. {@code AES_256}. This also is not compatible
-     * with the mentioned classes. Although this possibility is specified, neither the temurin JDK nor BouncyCastle support
-     * the algorithm so it might not be important
+     * with the mentioned classes.
      *
      * @param transformation The transformation to extract the key from
      * @return The algorithm mentioned in the transformation
@@ -23,5 +23,18 @@ public final class AlgorithmUtil {
      */
     public static String getAlgorithmFromTransformation(final String transformation) {
         return transformation.split("/")[0].split("_")[0];
+    }
+
+    /**
+     * @param transformation The transformation to get the algorithm from
+     * @param keyAlgorithm An optional key (pair) generation algorithm that should take precedence
+     * @return The key algorithm to use
+     */
+    public static String determineKeyAlgorithm(final String transformation, @Nullable final String keyAlgorithm) {
+        if (keyAlgorithm == null || keyAlgorithm.isEmpty()) {
+            return getAlgorithmFromTransformation(transformation);
+        } else {
+            return keyAlgorithm;
+        }
     }
 }
