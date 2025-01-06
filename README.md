@@ -67,5 +67,5 @@ This includes
 - [x] Improve documentation
 - [x] Make the project work as a separate dependency
 - [x] Testcases for authenticated encryption (GCM/CTR mode)
-- [ ] Check how to support other curves for ECIES and thus implicitly other EC variants
-- [ ] Test if and how KEM and key wrapping (other than ECIES) can be supported
+- [x] Check how to support other curves for ECIES and thus implicitly other EC variants
+- [x] Test if and how KEM and key wrapping (other than ECIES) can be supported
